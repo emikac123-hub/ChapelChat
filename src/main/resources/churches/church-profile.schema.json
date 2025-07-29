@@ -1,0 +1,37 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChurchProfile",
+  "type": "object",
+  "required": ["churchName", "pastor", "location", "serviceTimes", "youthGroup", "tone"],
+  "properties": {
+    "churchName": {
+      "type": "string"
+    },
+    "pastor": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "serviceTimes": {
+      "type": "object",
+      "properties": {
+        "sunday": { "type": "string" },
+        "wednesday": { "type": "string" }
+      },
+      "required": ["sunday"]
+    },
+    "youthGroup": {
+      "type": "object",
+      "required": ["day", "time", "description"],
+      "properties": {
+        "day": { "type": "string" },
+        "time": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "tone": {
+      "type": "string"
+    }
+  }
+}

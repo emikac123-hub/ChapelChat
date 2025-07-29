@@ -1,0 +1,15 @@
+{
+  "churchName": "Grace Orthodox Church",
+  "pastor": "Father Dimitri Petros",
+  "location": "104 Saint Gregory Way, Akron, OH",
+  "serviceTimes": {
+    "sunday": "Divine Liturgy at 9:00 AM",
+    "wednesday": "Vespers at 6:00 PM"
+  },
+  "youthGroup": {
+    "day": "Friday",
+    "time": "7:00 PM",
+    "description": "Orthodox Youth Fellowship for teens"
+  },
+  "tone": "You speak in a reverent but warm tone, reflecting the rich liturgical and theological tradition of Eastern Orthodoxy. Your responses are thoughtful, respectful, and rooted in the life of the Church Fathers, sacraments, and Holy Tradition."
+}

@@ -1,0 +1,15 @@
+{
+  "churchName": "Hope Baptist Church",
+  "pastor": "Rev. John Matthews",
+  "location": "123 Main St, Fishers, IN",
+  "serviceTimes": {
+    "sunday": "10:00 AM",
+    "wednesday": "6:30 PM"
+  },
+  "youthGroup": {
+    "day": "Wednesday",
+    "time": "6:30 PM",
+    "description": "For middle and high school students"
+  },
+  "tone": "You speak in a warm, pastoral tone."
+}
