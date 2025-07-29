@@ -9,7 +9,7 @@ To get started with ChapelChat, you'll need to have Java and Maven installed.
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/ChapelChat.git
+    git clone https://github.com/emikac123-hub/ChapelChat.git
     ```
 
 2.  **Navigate to the project directory:**
