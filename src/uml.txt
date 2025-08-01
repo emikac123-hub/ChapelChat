@@ -1,0 +1,41 @@
+  1 ### Entity Relationship Diagram
+
+  @startuml
+  hide circle
+  skinparam linetype ortho
+
+
+  entity "Church" as Church {
+     + id: String <<PK>>
+    --
+     + name: String
+     + allowedOrigin: String
+  }
+
+  entity "AppUser" as AppUser {
+     + id: Long <<PK>>
+    --
+     + username: String
+     + password: String
+     + role: String
+     + church_id: String <<FK>>
+  }
+
+
+  entity "ChurchApiKeyEntity" as ApiKey {
+     + id: UUID <<PK>>
+    --
+     + api_key: String
+     + is_active: Boolean
+     + created_at: Instant
+     + revoked_at: Instant
+     + church_id: String <<FK>>
+  }
+
+
+  Church "1" -- "0..*" AppUser : has
+  Church "1" -- "1" ApiKey : has
+  @enduml
+
+
+   1 

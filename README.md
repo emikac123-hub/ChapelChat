@@ -53,6 +53,9 @@ This endpoint takes a JSON object with a `question` and a `churchId` and returns
 }
 ```
 
+## Database Structure
+![alt text](image.png)
+
 ## Future Development
 
 *   **Frontend Widget:** A widget that churches can embed on their websites to provide a chat interface to the `/ask` API.
@@ -84,6 +87,8 @@ The project is a standard Spring Boot application with the following structure:
 │   └── test
 └── pom.xml
 ```
+
+
 
 ## Contributing
 
