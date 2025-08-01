@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.erikmikac.ChapelChat.entity.Church;
+import com.erikmikac.ChapelChat.entity.ChurchApiKeyEntity;
 import com.erikmikac.ChapelChat.repository.ChurchApiKeyRepository;
-import com.erikmikac.ChapelChat.security.ChurchApiKeyEntity;
 
 class ChurchApiKeyServiceTest {
 
@@ -25,9 +26,11 @@ class ChurchApiKeyServiceTest {
 
     @Test
     void returnsChurchIdIfKeyIsValidAndActive() {
+        Church church = new Church();
+        church.setId("hope-baptist");
         ChurchApiKeyEntity entity = new ChurchApiKeyEntity();
         entity.setApiKey("valid-key");
-        entity.setChurchId("hope-baptist");
+        entity.setChurch(church);
         entity.setActive(true);
 
         when(repository.findByApiKey("valid-key")).thenReturn(Optional.of(entity));
@@ -50,8 +53,10 @@ class ChurchApiKeyServiceTest {
     @Test
     void returnsEmptyIfKeyIsRevoked() {
         ChurchApiKeyEntity entity = new ChurchApiKeyEntity();
+        Church church = new Church();
+        church.setId("grace-orthodox");
         entity.setApiKey("revoked-key");
-        entity.setChurchId("grace-orthodox");
+        entity.setChurch(church);
         entity.setActive(false);
 
         when(repository.findByApiKey("revoked-key")).thenReturn(Optional.of(entity));

@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.erikmikac.ChapelChat.repository.ChurchApiKeyRepository;
-import com.erikmikac.ChapelChat.security.ChurchApiKeyEntity;
 
 @Service
 public class ChurchApiKeyService {
@@ -19,7 +18,7 @@ public class ChurchApiKeyService {
 
     public Optional<String> getChurchIdForValidKey(String apiKey) {
         return repository.findByApiKey(apiKey)
-                .filter(ChurchApiKeyEntity::isActive)
-                .map(ChurchApiKeyEntity::getChurchId);
+                .filter(x -> x.getIsActive())
+                .map(x -> x.getChurch().getId());
     }
 }

@@ -14,7 +14,8 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/ask")
-                        .allowedOrigins("http://localhost:3000")  // or "*" for testing
+                        .allowedOrigins("http://localhost:3000", "https://super-haupia-aa6453.netlify.app") 
+                        
                         .allowedMethods("POST", "OPTIONS")
                         .allowedHeaders("Content-Type", "X-Api-Key")
                         .allowCredentials(false)

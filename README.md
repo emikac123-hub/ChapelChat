@@ -22,6 +22,8 @@ To get started with ChapelChat, you'll need to have Java and Maven installed.
 
     ```bash
     ./mvnw spring-boot:run
+
+    run locally - mvn spring-boot:run -Dspring.profiles.active=local
     ```
 
 The application will start on port 8080.

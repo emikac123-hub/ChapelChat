@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://your-host:5432/chapelchat
+    username: your_username
+    password: your_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
