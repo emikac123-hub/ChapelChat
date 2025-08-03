@@ -1,37 +1,146 @@
 {
- "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "ChurchProfile",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrganizationProfile",
   "type": "object",
-  "required": ["churchName", "pastor", "location", "serviceTimes", "youthGroup", "tone"],
+  "required": ["organizationName", "location", "tone"],
   "properties": {
-    "churchName": {
-      "type": "string"
-    },
-    "pastor": {
-      "type": "string"
-    },
-    "location": {
-      "type": "string"
-    },
-    "serviceTimes": {
+    "organizationName": { "type": "string" },
+    "slug": { "type": "string" },
+    "denomination": { "type": "string" },
+    "location": { "type": "string" },
+    "geo": {
       "type": "object",
       "properties": {
-        "sunday": { "type": "string" },
-        "wednesday": { "type": "string" }
-      },
-      "required": ["sunday"]
-    },
-    "youthGroup": {
-      "type": "object",
-      "required": ["day", "time", "description"],
-      "properties": {
-        "day": { "type": "string" },
-        "time": { "type": "string" },
-        "description": { "type": "string" }
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" }
       }
     },
-    "tone": {
-      "type": "string"
+    "contact": {
+      "type": "object",
+      "properties": {
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "website": { "type": "string", "format": "uri" }
+      }
+    },
+    "tone": { "type": "string" },
+    "languages": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "leader": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "name": { "type": "string" },
+        "bio": { "type": "string" },
+        "imageUrl": { "type": "string", "format": "uri" }
+      },
+      "required": ["name"]
+    },
+    "gatherings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": { "type": "string" },
+          "time": { "type": "string" },
+          "label": { "type": "string" },
+          "location": { "type": "string" },
+          "isLivestreamed": { "type": "boolean" },
+          "livestreamUrl": { "type": "string", "format": "uri" }
+        },
+        "required": ["day", "time"]
+      }
+    },
+    "programs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "audience": { "type": "string" },
+          "schedule": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string" },
+          "location": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["title", "date"]
+      }
+    },
+    "beliefs": { "type": "string" },
+    "sacramentsOrPractices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      }
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "answer": { "type": "string" }
+        },
+        "required": ["question", "answer"]
+      }
+    },
+    "socialMedia": {
+      "type": "object",
+      "properties": {
+        "facebook": { "type": "string", "format": "uri" },
+        "instagram": { "type": "string", "format": "uri" },
+        "twitter": { "type": "string", "format": "uri" },
+        "youtube": { "type": "string", "format": "uri" }
+      }
+    },
+    "media": {
+      "type": "object",
+      "properties": {
+        "heroImage": { "type": "string", "format": "uri" },
+        "logoImage": { "type": "string", "format": "uri" },
+        "gallery": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "donation": {
+      "type": "object",
+      "properties": {
+        "donationUrl": { "type": "string", "format": "uri" },
+        "platform": { "type": "string" }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "wheelchairAccessible": { "type": "boolean" },
+        "hearingAssistanceAvailable": { "type": "boolean" },
+        "childcareAvailable": { "type": "boolean" }
+      }
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 }

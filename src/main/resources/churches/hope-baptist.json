@@ -1,15 +1,132 @@
 {
-  "churchName": "Hope Baptist Church",
-  "pastor": "Rev. John Matthews",
-  "location": "123 Main St, Fishers, IN",
-  "serviceTimes": {
-    "sunday": "10:00 AM",
-    "wednesday": "6:30 PM"
+  "organizationName": "Hope Baptist Church",
+  "slug": "hope-baptist",
+  "denomination": "Independent Baptist",
+  "location": "456 Grace Ln, Greenwood, IN",
+  "geo": {
+    "latitude": 39.6143,
+    "longitude": -86.1065
   },
-  "youthGroup": {
-    "day": "Wednesday",
-    "time": "6:30 PM",
-    "description": "For middle and high school students"
+  "contact": {
+    "phone": "(317) 555-2040",
+    "email": "office@hopebaptist.org",
+    "website": "https://hopebaptist.org"
   },
-  "tone": "You speak in a warm, pastoral tone."
+  "tone": "You speak in a kind, encouraging, and Bible-centered tone, reflecting the values of a traditional Baptist congregation. Your responses are rooted in Scripture, grace, and truth.",
+  "languages": ["English"],
+  "leader": {
+    "title": "Pastor",
+    "name": "Rev. John Matthews",
+    "bio": "Pastor John has led Hope Baptist since 2016. He is known for his verse-by-verse preaching, community outreach, and heart for missions.",
+    "imageUrl": "https://hopebaptist.org/images/pastor-john.jpg"
+  },
+  "gatherings": [
+    {
+      "day": "Sunday",
+      "time": "10:00 AM",
+      "label": "Worship Service",
+      "location": "Main Auditorium",
+      "isLivestreamed": true,
+      "livestreamUrl": "https://youtube.com/hopebaptist/live"
+    },
+    {
+      "day": "Sunday",
+      "time": "6:00 PM",
+      "label": "Evening Service",
+      "location": "Main Auditorium"
+    },
+    {
+      "day": "Wednesday",
+      "time": "6:30 PM",
+      "label": "Prayer Meeting and Youth Group",
+      "location": "Fellowship Hall"
+    }
+  ],
+  "programs": [
+    {
+      "name": "King’s Kids",
+      "audience": "Children (K–5th grade)",
+      "schedule": "Wednesdays at 6:30 PM",
+      "description": "Bible-based program for children with music, memory verses, and games."
+    },
+    {
+      "name": "Rooted Teens",
+      "audience": "Middle & High School Students",
+      "schedule": "Wednesdays at 6:30 PM",
+      "description": "Youth group with Bible study, worship, and fellowship."
+    },
+    {
+      "name": "Men's Breakfast",
+      "audience": "Men",
+      "schedule": "First Saturday of each month at 8:00 AM",
+      "description": "Breakfast, devotional, and fellowship for men of all ages."
+    }
+  ],
+  "events": [
+    {
+      "title": "Fall Revival Series",
+      "date": "2025-10-01",
+      "time": "7:00 PM",
+      "location": "Main Auditorium",
+      "description": "Special nightly services with guest preachers and music."
+    },
+    {
+      "title": "Thanksgiving Outreach",
+      "date": "2025-11-23",
+      "time": "1:00 PM",
+      "location": "Church Parking Lot",
+      "description": "Meal boxes and gospel tracts distributed to the community."
+    }
+  ],
+  "beliefs": "We believe in the authority of the Bible, salvation by grace through faith, and the importance of the local church. We hold to the fundamentals of the faith and practice believer’s baptism by immersion.",
+  "sacramentsOrPractices": [
+    {
+      "name": "Believer’s Baptism",
+      "description": "Performed after a public profession of faith. Typically held on the first Sunday of the month."
+    },
+    {
+      "name": "The Lord’s Supper",
+      "description": "Observed quarterly as a remembrance of Christ’s sacrifice."
+    },
+    {
+      "name": "Missions Support",
+      "description": "The church supports over 25 missionaries around the world."
+    }
+  ],
+  "faq": [
+    {
+      "question": "What should I wear to church?",
+      "answer": "Most people wear business casual. You're welcome to come as you are."
+    },
+    {
+      "question": "Is there childcare?",
+      "answer": "Yes! We offer nursery for infants and toddlers, and children's church during the morning sermon."
+    },
+    {
+      "question": "How do I become a member?",
+      "answer": "Membership classes are offered every quarter. You can talk to Pastor John after service to sign up."
+    }
+  ],
+  "socialMedia": {
+    "facebook": "https://facebook.com/hopebaptistchurch",
+    "youtube": "https://youtube.com/hopebaptist"
+  },
+  "media": {
+    "heroImage": "https://hopebaptist.org/images/hero.jpg",
+    "logoImage": "https://hopebaptist.org/images/logo.png",
+    "gallery": [
+      "https://hopebaptist.org/images/vbs-2024.jpg",
+      "https://hopebaptist.org/images/fall-fest.jpg"
+    ]
+  },
+  "donation": {
+    "donationUrl": "https://tithe.ly/give?c=7654321",
+    "platform": "Tithe.ly"
+  },
+  "accessibility": {
+    "wheelchairAccessible": true,
+    "hearingAssistanceAvailable": false,
+    "childcareAvailable": true
+  },
+  "lastUpdated": "2025-08-02T22:15:00-04:00"
 }

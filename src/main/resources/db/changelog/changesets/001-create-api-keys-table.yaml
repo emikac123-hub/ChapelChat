@@ -20,6 +20,9 @@ databaseChangeLog:
               - column:
                   name: allowed_origin
                   type: VARCHAR(255)
+              - column:
+                  name: contact_email
+                  type: VARCHAR(255)
 
   - changeSet:
       id: 2-create-api-key
@@ -115,6 +118,9 @@ databaseChangeLog:
               - column:
                   name: allowed_origin
                   value: https://hopebaptist.example.org
+              - column:
+                  name: contact_email
+                  type: mikacew@gmail.com
         - insert:
             tableName: api_keys
             columns:

@@ -1,0 +1,4 @@
+openai:
+  api:
+    base-url: http://localhost:8089
+    key: mock

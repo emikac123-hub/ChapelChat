@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.erikmikac.ChapelChat.entity.ChurchApiKeyEntity;
-import com.erikmikac.ChapelChat.repository.ChurchApiKeyRepository;
+import com.erikmikac.ChapelChat.service.ChurchApiKeyService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,10 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class ApiKeyInterceptor implements HandlerInterceptor {
 
-    private final ChurchApiKeyRepository apiKeyRepository;
+    private final ChurchApiKeyService keyService;
 
-    public ApiKeyInterceptor(ChurchApiKeyRepository apiKeyRepository) {
-        this.apiKeyRepository = apiKeyRepository;
+    public ApiKeyInterceptor(ChurchApiKeyService keyService) {
+        this.keyService = keyService;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Optional<ChurchApiKeyEntity> match = apiKeyRepository.findByApiKey(apiKey);
+        Optional<ChurchApiKeyEntity> match = keyService.getActiveChurchesByApiKey(apiKey);
         if (match.isEmpty()) {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid API Key");
             return false;

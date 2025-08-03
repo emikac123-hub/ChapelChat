@@ -1,7 +1,12 @@
 package com.erikmikac.ChapelChat.repository;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.erikmikac.ChapelChat.entity.AppUser;
 
-public class ChurchRepository extends JpaRepository<AppUser, String> {
-    
+public interface ChurchRepository extends JpaRepository<AppUser, Long> {
+    Optional<String> findContactEmailByChurchId(String churchId);
+
 }

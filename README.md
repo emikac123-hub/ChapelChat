@@ -1,95 +1,71 @@
-# ChapelChat
+# ChapelChat: AI Assistant for Churches
 
-ChapelChat is a backend service that provides a conversational AI interface for churches. It allows users to ask questions and get information about a specific church's profile.
+ChapelChat is a powerful, AI-driven chatbot designed to help churches and ministries engage with their communities. It provides instant, accurate answers to questions about church events, beliefs, and schedules, freeing up staff to focus on what matters most.
+
+## Key Features
+
+- **AI-Powered Chatbot**: Leverages the OpenAI API to provide intelligent, context-aware responses.
+- **Church-Specific Knowledge**: Easily customizable with church-specific information, including service times, event details, and core beliefs.
+- **Secure and Scalable**: Built with Spring Boot and secured with API keys, ensuring reliable and safe operation.
+- **Extensible Architecture**: Designed for easy expansion, allowing new features and integrations to be added with minimal effort.
 
 ## Getting Started
 
-To get started with ChapelChat, you'll need to have Java and Maven installed.
+### Prerequisites
 
-1.  **Clone the repository:**
+- Java 21
+- Maven
+- PostgreSQL
 
-    ```bash
-    git clone https://github.com/emikac123-hub/ChapelChat.git
-    ```
+### Installation
 
-2.  **Navigate to the project directory:**
-
-    ```bash
-    cd ChapelChat
-    ```
-
-3.  **Run the application:**
-
-    ```bash
-    ./mvnw spring-boot:run
-
-    run locally - mvn spring-boot:run -Dspring.profiles.active=local
-    ```
-
-The application will start on port 8080.
-
-## API
-
-The primary endpoint for ChapelChat is `/ask`.
-
-### POST /ask
-
-This endpoint takes a JSON object with a `question` and a `churchId` and returns a response from the AI.
-
-**Request:**
-
-```json
-{
-  "question": "What are your service times?",
-  "churchId": "cornerstone-catholic"
-}
-```
-
-**Response:**
-
-```json
-{
-  "response": "Our service times are Sundays at 9:00 AM and 11:00 AM."
-}
-```
-
-## Database Structure
-![alt text](image.png)
-
-## Future Development
-
-*   **Frontend Widget:** A widget that churches can embed on their websites to provide a chat interface to the `/ask` API.
-*   **Dashboard:** A dashboard that allows churches to customize their profiles and view analytics.
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/ChapelChat.git
+   ```
+2. **Configure the application**:
+   - Create a `application-local.yaml` file in `src/main/resources`.
+   - Add your PostgreSQL and OpenAI API key details:
+     ```yaml
+     spring:
+       datasource:
+         url: jdbc:postgresql://localhost:5432/your-db
+         username: your-username
+         password: your-password
+     openai:
+       api:
+         key: your-openai-api-key
+     ```
+3. **Run the application**:
+   ```bash
+   mvn spring-boot:run
+   ```
 
 ## Project Structure
 
-The project is a standard Spring Boot application with the following structure:
+ChapelChat follows a standard Spring Boot project structure:
 
+- **`src/main/java`**: Contains the core application code.
+  - **`config`**: Houses configuration classes for security, API keys, and web settings.
+  - **`controller`**: Manages incoming web requests and routes them to the appropriate services.
+  - **`service`**: Implements the business logic, including AI integration and data management.
+  - **`entity`**: Defines the database schema and entities.
+  - **`repository`**: Provides an interface for database operations.
+- **`src/main/resources`**: Includes configuration files, database migrations, and static assets.
+  - **`churches`**: Stores church-specific profiles in JSON format.
+  - **`db/changelog`**: Contains Liquibase scripts for database schema management.
+
+## Usage
+
+To ask a question, send a POST request to the `/ask` endpoint with your API key and query:
+
+```bash
+curl -X POST http://localhost:8080/ask \
+     -H "X-API-KEY: your-api-key" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "What time is the Sunday service?"}'
 ```
-.
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── com
-│   │   │       └── erikmikac
-│   │   │           └── ChapelChat
-│   │   │               ├── ChapelChatApplication.java
-│   │   │               ├── config
-│   │   │               ├── controller
-│   │   │               ├── exceptions
-│   │   │               ├── model
-│   │   │               └── service
-│   │   └── resources
-│   │       ├── application.properties
-│   │       ├── churches
-│   │       ├── static
-│   │       └── templates
-│   └── test
-└── pom.xml
-```
-
-
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a pull request.
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.

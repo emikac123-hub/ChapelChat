@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2025-08-01-enable-pgcrypto
+      author: emikac
+      changes:
+        - sql:
+            splitStatements: false
+            sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+  - changeSet:
+      id: 2025-08-01-create-chat-logs
+      author: emikac
+      changes:
+        - createTable:
+            tableName: chat_logs
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: church_id
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: session_id
+                  type: UUID
+              - column:
+                  name: user_question
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bot_response
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+              - column:
+                  name: source_ip
+                  type: VARCHAR(45)
+              - column:
+                  name: user_agent
+                  type: TEXT
+              - column:
+                  name: metadata
+                  type: JSONB
+        - addDefaultValue:
+            tableName: chat_logs
+            columnName: id
+            columnDataType: UUID
+            defaultValueComputed: gen_random_uuid()
+  - changeSet:
+        id: 2025-08-01-chat-logs-jsonb-index
+        author: emikac
+        changes:
+          - createIndex:
+              indexName: chat_logs_metadata_gin_idx
+              tableName: chat_logs
+              columns:
+                - column:
+                    name: metadata
+              indexType: gin

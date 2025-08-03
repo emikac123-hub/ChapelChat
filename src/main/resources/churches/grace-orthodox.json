@@ -1,15 +1,134 @@
 {
-  "churchName": "Grace Orthodox Church",
-  "pastor": "Father Dimitri Petros",
-  "location": "104 Saint Gregory Way, Akron, OH",
-  "serviceTimes": {
-    "sunday": "Divine Liturgy at 9:00 AM",
-    "wednesday": "Vespers at 6:00 PM"
+  "organizationName": "Grace Orthodox Church",
+  "slug": "grace-orthodox",
+  "denomination": "Eastern Orthodox",
+  "location": "789 Theophany Way, Lexington, KY",
+  "geo": {
+    "latitude": 38.0406,
+    "longitude": -84.5037
   },
-  "youthGroup": {
-    "day": "Friday",
-    "time": "7:00 PM",
-    "description": "Orthodox Youth Fellowship for teens"
+  "contact": {
+    "phone": "(859) 555-8800",
+    "email": "info@graceorthodox.org",
+    "website": "https://graceorthodox.org"
   },
-  "tone": "You speak in a reverent but warm tone, reflecting the rich liturgical and theological tradition of Eastern Orthodoxy. Your responses are thoughtful, respectful, and rooted in the life of the Church Fathers, sacraments, and Holy Tradition."
+  "tone": "You speak with reverence, depth, and a liturgical spirit grounded in Holy Tradition and the writings of the Church Fathers. Your responses are theologically rich and pastoral, reflecting the Orthodox understanding of salvation as theosis.",
+  "languages": ["English", "Greek"],
+  "leader": {
+    "title": "Fr.",
+    "name": "Father Dimitri Elia",
+    "bio": "Fr. Dimitri was ordained in 2010 and has served Grace Orthodox since 2018. He studied theology in Thessaloniki and is passionate about catechesis and the liturgical life of the Church.",
+    "imageUrl": "https://graceorthodox.org/images/fr-dimitri.jpg"
+  },
+  "gatherings": [
+    {
+      "day": "Sunday",
+      "time": "9:30 AM",
+      "label": "Divine Liturgy",
+      "location": "Main Nave",
+      "isLivestreamed": true,
+      "livestreamUrl": "https://youtube.com/graceorthodox/live"
+    },
+    {
+      "day": "Saturday",
+      "time": "6:00 PM",
+      "label": "Great Vespers",
+      "location": "Chapel"
+    },
+    {
+      "day": "Wednesday",
+      "time": "6:30 PM",
+      "label": "Paraklesis",
+      "location": "Chapel"
+    }
+  ],
+  "programs": [
+    {
+      "name": "Orthodox Catechism",
+      "audience": "Inquirers and Catechumens",
+      "schedule": "Thursdays at 7:00 PM",
+      "description": "A structured introduction to Orthodox theology and life."
+    },
+    {
+      "name": "Philoptochos Fellowship",
+      "audience": "Women",
+      "schedule": "2nd Tuesday of the month at 6:30 PM",
+      "description": "Women’s fellowship and service ministry rooted in the love of Christ."
+    },
+    {
+      "name": "Youth Choir",
+      "audience": "Children and Teens",
+      "schedule": "Sundays after Liturgy",
+      "description": "Liturgical music instruction and youth participation in chanting."
+    }
+  ],
+  "events": [
+    {
+      "title": "Dormition Fast and Vigil",
+      "date": "2025-08-14",
+      "time": "7:00 PM",
+      "location": "Main Nave",
+      "description": "A solemn vigil on the eve of the Dormition of the Theotokos."
+    },
+    {
+      "title": "Greek Food Festival",
+      "date": "2025-09-21",
+      "time": "11:00 AM",
+      "location": "Church Courtyard",
+      "description": "Annual celebration of food, faith, and fellowship for the community."
+    }
+  ],
+  "beliefs": "We confess the Nicene-Constantinopolitan Creed, hold fast to the Seven Ecumenical Councils, and believe in salvation as participation in the divine life of God (theosis). We embrace Scripture, Holy Tradition, the sacraments, and the communal liturgical life of the Church.",
+  "sacramentsOrPractices": [
+    {
+      "name": "Divine Liturgy",
+      "description": "The central act of worship where we receive the Eucharist, the true Body and Blood of Christ."
+    },
+    {
+      "name": "Confession",
+      "description": "Offered before major feasts and by appointment. A sacrament of healing and restoration."
+    },
+    {
+      "name": "Iconography",
+      "description": "We venerate icons, not as idols, but as windows into the heavenly realm."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Can non-Orthodox attend services?",
+      "answer": "Yes! All are welcome to attend. Communion is reserved for baptized Orthodox Christians in good standing, but anyone may come forward for a blessing."
+    },
+    {
+      "question": "Do you offer a church tour?",
+      "answer": "Yes, guided tours are available after Liturgy on the first Sunday of every month."
+    },
+    {
+      "question": "Is there a dress code?",
+      "answer": "Modest clothing is encouraged. Women are welcome to wear head coverings if they wish, but it is not required."
+    }
+  ],
+  "socialMedia": {
+    "facebook": "https://facebook.com/graceorthodoxchurch",
+    "instagram": "https://instagram.com/graceorthodox",
+    "youtube": "https://youtube.com/graceorthodox"
+  },
+  "media": {
+    "heroImage": "https://graceorthodox.org/images/hero-liturgy.jpg",
+    "logoImage": "https://graceorthodox.org/images/logo.png",
+    "gallery": [
+      "https://graceorthodox.org/images/procession.jpg",
+      "https://graceorthodox.org/images/youth-choir.jpg",
+      "https://graceorthodox.org/images/pascha.jpg"
+    ]
+  },
+  "donation": {
+    "donationUrl": "https://graceorthodox.org/give",
+    "platform": "Stripe"
+  },
+  "accessibility": {
+    "wheelchairAccessible": true,
+    "hearingAssistanceAvailable": false,
+    "childcareAvailable": false
+  },
+  "lastUpdated": "2025-08-02T22:30:00-04:00"
 }

@@ -12,10 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "api_keys")
 @Data
+@NoArgsConstructor
 public class ChurchApiKeyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

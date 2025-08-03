@@ -31,7 +31,7 @@ class ChurchApiKeyServiceTest {
         ChurchApiKeyEntity entity = new ChurchApiKeyEntity();
         entity.setApiKey("valid-key");
         entity.setChurch(church);
-        entity.setActive(true);
+        entity.setIsActive(true);
 
         when(repository.findByApiKey("valid-key")).thenReturn(Optional.of(entity));
 
@@ -57,7 +57,7 @@ class ChurchApiKeyServiceTest {
         church.setId("grace-orthodox");
         entity.setApiKey("revoked-key");
         entity.setChurch(church);
-        entity.setActive(false);
+          entity.setIsActive(false);
 
         when(repository.findByApiKey("revoked-key")).thenReturn(Optional.of(entity));
 

@@ -1,15 +1,132 @@
 {
-  "churchName": "Cornerstone Catholic Parish",
-  "pastor": "Fr. Michael Santiago",
+  "organizationName": "Cornerstone Catholic Parish",
+  "slug": "cornerstone-catholic",
+  "denomination": "Roman Catholic",
   "location": "301 Ave Maria Dr, Phoenix, AZ",
-  "serviceTimes": {
-    "sunday": "Mass at 10:30 AM",
-    "wednesday": "Adoration and Confession at 5:30 PM"
+  "geo": {
+    "latitude": 33.4484,
+    "longitude": -112.0740
   },
-  "youthGroup": {
-    "day": "Sunday",
-    "time": "6:00 PM",
-    "description": "Life Teen ministry for high school youth"
+  "contact": {
+    "phone": "(602) 555-1122",
+    "email": "info@cornerstonecatholic.org",
+    "website": "https://cornerstonecatholic.org"
   },
-  "tone": "You speak in a pastoral and compassionate tone consistent with the teachings of the Catholic Church. Your responses are rooted in Scripture, the Catechism, and the life of the Church, and you express the mercy and truth of Christ with clarity and care."
+  "tone": "You speak in a pastoral and compassionate tone consistent with the teachings of the Catholic Church. Your responses are rooted in Scripture, the Catechism, and the life of the Church, and you express the mercy and truth of Christ with clarity and care.",
+  "languages": ["English", "Spanish"],
+  "leader": {
+    "title": "Pastor",
+    "name": "Fr. Michael Santiago",
+    "bio": "Fr. Michael has served Cornerstone Catholic Parish since 2014. He is known for his deep love of the Eucharist, vibrant homilies, and pastoral care.",
+    "imageUrl": "https://cornerstonecatholic.org/images/fr-michael.jpg"
+  },
+  "gatherings": [
+    {
+      "day": "Sunday",
+      "time": "10:30 AM",
+      "label": "Mass",
+      "location": "Main Sanctuary",
+      "isLivestreamed": true,
+      "livestreamUrl": "https://youtube.com/cornerstonecatholic/live"
+    },
+    {
+      "day": "Wednesday",
+      "time": "5:30 PM",
+      "label": "Adoration and Confession",
+      "location": "Chapel"
+    }
+  ],
+  "programs": [
+    {
+      "name": "Life Teen",
+      "audience": "High School Youth",
+      "schedule": "Sundays at 6:00 PM",
+      "description": "A vibrant youth ministry centered around the Eucharist and Catholic teaching."
+    },
+    {
+      "name": "RCIA",
+      "audience": "Adults exploring the Catholic faith",
+      "schedule": "Mondays at 7:00 PM",
+      "description": "Rite of Christian Initiation for Adults seeking full communion with the Church."
+    },
+    {
+      "name": "Bible Study",
+      "audience": "Adults",
+      "schedule": "Thursdays at 6:30 PM",
+      "description": "Weekly Scripture study in the parish hall."
+    }
+  ],
+  "events": [
+    {
+      "title": "Feast of the Assumption Mass",
+      "date": "2025-08-15",
+      "time": "6:00 PM",
+      "location": "Main Sanctuary",
+      "description": "Holy Day of Obligation celebrating the Assumption of Mary."
+    },
+    {
+      "title": "Annual Parish Picnic",
+      "date": "2025-09-08",
+      "time": "12:00 PM",
+      "location": "Desert Park",
+      "description": "Food, games, and fellowship for all parishioners."
+    }
+  ],
+  "beliefs": "We are a Roman Catholic parish faithful to the Magisterium of the Church. We profess the Nicene Creed, celebrate the sacraments, and seek to grow in holiness through prayer, community, service, and evangelization.",
+  "sacramentsOrPractices": [
+    {
+      "name": "Eucharist",
+      "description": "The source and summit of our faith, celebrated at daily and Sunday Mass."
+    },
+    {
+      "name": "Reconciliation",
+      "description": "Available before every Mass and on Wednesday evenings during Adoration."
+    },
+    {
+      "name": "Baptism",
+      "description": "Offered monthly. Requires a preparation class for parents and godparents."
+    },
+    {
+      "name": "Marriage",
+      "description": "Preparation required at least 6 months in advance. Contact the parish office."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Do I need to be Catholic to attend Mass?",
+      "answer": "All are welcome to attend Mass. Non-Catholics are invited to come forward for a blessing during Communion."
+    },
+    {
+      "question": "Is there parking available?",
+      "answer": "Yes. There is a large parking lot behind the church building."
+    },
+    {
+      "question": "Is childcare available during Mass?",
+      "answer": "We offer a staffed nursery during the 10:30 AM Sunday Mass."
+    }
+  ],
+  "socialMedia": {
+    "facebook": "https://facebook.com/cornerstonecatholic",
+    "instagram": "https://instagram.com/cornerstonecatholic",
+    "youtube": "https://youtube.com/cornerstonecatholic"
+  },
+  "media": {
+    "heroImage": "https://cornerstonecatholic.org/images/hero-mass.jpg",
+    "logoImage": "https://cornerstonecatholic.org/images/logo.svg",
+    "gallery": [
+      "https://cornerstonecatholic.org/images/picnic2024.jpg",
+      "https://cornerstonecatholic.org/images/youthgroup.jpg",
+      "https://cornerstonecatholic.org/images/adoration.jpg"
+    ]
+  },
+  "donation": {
+    "donationUrl": "https://tithe.ly/give?c=1234567",
+    "platform": "Tithe.ly"
+  },
+  "accessibility": {
+    "wheelchairAccessible": true,
+    "hearingAssistanceAvailable": true,
+    "childcareAvailable": true
+  },
+  "lastUpdated": "2025-08-02T21:45:00-04:00"
 }
