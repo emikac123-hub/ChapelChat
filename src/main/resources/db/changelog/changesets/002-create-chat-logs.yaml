@@ -2,13 +2,16 @@ databaseChangeLog:
   - changeSet:
       id: 2025-08-01-enable-pgcrypto
       author: emikac
+      dbms: postgresql
       changes:
         - sql:
             splitStatements: false
             sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
   - changeSet:
       id: 2025-08-01-create-chat-logs
       author: emikac
+      dbms: postgresql
       changes:
         - createTable:
             tableName: chat_logs
@@ -50,19 +53,22 @@ databaseChangeLog:
               - column:
                   name: metadata
                   type: JSONB
+
         - addDefaultValue:
             tableName: chat_logs
             columnName: id
             columnDataType: UUID
             defaultValueComputed: gen_random_uuid()
+
   - changeSet:
-        id: 2025-08-01-chat-logs-jsonb-index
-        author: emikac
-        changes:
-          - createIndex:
-              indexName: chat_logs_metadata_gin_idx
-              tableName: chat_logs
-              columns:
-                - column:
-                    name: metadata
-              indexType: gin
+      id: 2025-08-01-chat-logs-jsonb-index
+      author: emikac
+      dbms: postgresql
+      changes:
+        - createIndex:
+            indexName: chat_logs_metadata_gin_idx
+            tableName: chat_logs
+            columns:
+              - column:
+                  name: metadata
+            indexType: gin
