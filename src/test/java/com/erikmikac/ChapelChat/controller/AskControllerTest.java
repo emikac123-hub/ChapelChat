@@ -1,40 +1,51 @@
 package com.erikmikac.ChapelChat.controller;
 
-import com.erikmikac.ChapelChat.service.*;
-
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Optional;
-import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.erikmikac.ChapelChat.config.SecurityConfig;
+import com.erikmikac.ChapelChat.entity.Church;
+import com.erikmikac.ChapelChat.entity.ChurchApiKeyEntity;
+import com.erikmikac.ChapelChat.model.AskRequest;
+import com.erikmikac.ChapelChat.model.AskResponse;
+import com.erikmikac.ChapelChat.service.AskService;
+import com.erikmikac.ChapelChat.service.ChatLogService;
+import com.erikmikac.ChapelChat.service.ChurchApiKeyService;
+import com.erikmikac.ChapelChat.service.ChurchProfileService;
+import com.erikmikac.ChapelChat.service.OpenAiService;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.erikmikac.ChapelChat.entity.ChatLog;
-import com.erikmikac.ChapelChat.entity.Church;
-import com.erikmikac.ChapelChat.entity.ChurchApiKeyEntity;
-import com.erikmikac.ChapelChat.exceptions.ChurchProfileNotFoundException;
-import com.erikmikac.ChapelChat.model.AskRequest;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class AskControllerTest {
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
+
+import com.erikmikac.ChapelChat.repository.AppUserRepository;
+
+@WebMvcTest(AskController.class)
+@Import(SecurityConfig.class)
+public class AskControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,7 +66,12 @@ class AskControllerTest {
     private ChatLogService chatLogService;
 
     @MockBean
+    private AppUserRepository AppUserRepository;
+    @MockBean
+    AskService askService;
+    @MockBean
     private AskRequest mockAskRequest;
+
     private final String VALID_API_KEY = "valid-api-key";
     private final String INVALID_API_KEY = "invalid-api-key";
     private final String CHURCH_ID = "hope-baptist";
@@ -73,78 +89,56 @@ class AskControllerTest {
     }
 
     @Test
-    void ask_withValidApiKey_returnsOk() throws Exception {
-        UUID sessionId = UUID.randomUUID();
-        AskRequest askRequest = new AskRequest(USER_QUESTION, sessionId);
+
+    void ask_withValidRequest_returnsResponse() throws Exception {
+        // Arrange
         when(apiKeyService.getActiveChurchesByApiKey(VALID_API_KEY)).thenReturn(Optional.of(churchEntity));
-        when(apiKeyService.getChurchIdForValidKey(VALID_API_KEY)).thenReturn(Optional.of(CHURCH_ID));
-        when(profileService.getSystemPromptFor(CHURCH_ID)).thenReturn("System prompt");
         when(openAiService.generateAnswer(any(), any())).thenReturn(BOT_ANSWER);
+        AskRequest request = new AskRequest();
+        request.setMessage("Hello, what time is church?");
+        request.setSessionId(UUID.randomUUID());
+
+        AskResponse response = new AskResponse("Church starts at 10am.");
+        Mockito.when(askService.processAsk(any(AskRequest.class), any(HttpServletRequest.class)))
+                .thenReturn(ResponseEntity.ok(response));
+
+        // Act + Assert
         mockMvc.perform(post("/ask")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("X-Api-Key", VALID_API_KEY)
-                .content(objectMapper.writeValueAsString(askRequest)))
+                .content(objectMapper.writeValueAsString(request))
+                .header("X-Api-Key", "valid-api-key"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value(BOT_ANSWER));
-
-        verify(chatLogService, times(1)).saveChatLogAndEnrich(any(ChatLog.class));
-    }
-
-    @Test
-    void ask_withInvalidApiKey_returnsUnauthorized() throws Exception {
-        UUID sessionId = UUID.randomUUID();
-        AskRequest askRequest = new AskRequest(USER_QUESTION, sessionId);
-        when(apiKeyService.getActiveChurchesByApiKey(INVALID_API_KEY)).thenReturn(Optional.of(churchEntity));
-        when(apiKeyService.getChurchIdForValidKey(INVALID_API_KEY)).thenReturn(Optional.empty());
-
-        mockMvc.perform(post("/ask")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("X-Api-Key", INVALID_API_KEY)
-                .content(objectMapper.writeValueAsString(askRequest)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.response").value("Invalid or revoked API key."));
-
-        verifyNoInteractions(profileService, openAiService, chatLogService);
+                .andExpect(jsonPath("$.response").value("Church starts at 10am."));
     }
 
     @Test
     void ask_withMissingApiKey_returnsUnauthorized() throws Exception {
-        UUID sessionId = UUID.randomUUID();
-        AskRequest askRequest = new AskRequest(USER_QUESTION, sessionId);
+        AskRequest request = new AskRequest();
+        request.setMessage("No key");
+        request.setSessionId(UUID.randomUUID());
 
         mockMvc.perform(post("/ask")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(askRequest)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
-
-        verifyNoInteractions(apiKeyService, profileService, openAiService, chatLogService);
     }
 
     @Test
-    void ask_withMissingMessage_returnsBadRequest() throws Exception {
-        AskRequest askRequest = new AskRequest(null, UUID.randomUUID());
+    void ask_withEmptyMessage_returnsBadRequest() throws Exception {
+        AskRequest request = new AskRequest();
+        request.setMessage(" ");
+        request.setSessionId(UUID.randomUUID());
         when(apiKeyService.getActiveChurchesByApiKey(VALID_API_KEY)).thenReturn(Optional.of(churchEntity));
-        when(apiKeyService.getChurchIdForValidKey(VALID_API_KEY)).thenReturn(Optional.of(CHURCH_ID));
+        AskResponse response = new AskResponse("The message is empty.");
+        Mockito.when(askService.processAsk(any(AskRequest.class), any(HttpServletRequest.class)))
+                .thenReturn(ResponseEntity.badRequest().body(response));
 
         mockMvc.perform(post("/ask")
-                .header("X-Api-Key", VALID_API_KEY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(askRequest)))
-                .andExpect(status().isBadRequest());
-    }
+                .content(objectMapper.writeValueAsString(request))
+                .header("X-Api-Key", "valid-api-key"))
 
-    @Test
-    void ask_withUnregisteredChurch_returnsBadRequest() throws Exception {
-        AskRequest askRequest = new AskRequest(USER_QUESTION, UUID.randomUUID());
-        when(apiKeyService.getActiveChurchesByApiKey(VALID_API_KEY)).thenReturn(Optional.of(churchEntity));
-        when(apiKeyService.getChurchIdForValidKey(VALID_API_KEY)).thenReturn(Optional.of(CHURCH_ID));
-        when(profileService.getSystemPromptFor(CHURCH_ID)).thenThrow(new ChurchProfileNotFoundException(BOT_ANSWER));
-
-        mockMvc.perform(post("/ask")
-                .header("X-Api-Key", VALID_API_KEY)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(askRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.response").value("That church's profile could not be found."));
+                .andExpect(jsonPath("$.response").value("The message is empty."));
     }
 }

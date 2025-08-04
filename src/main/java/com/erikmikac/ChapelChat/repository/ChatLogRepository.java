@@ -29,4 +29,5 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, UUID> {
         int countBySessionId(UUID sessionId);
 
         int countBySourceIpAndTimestampAfter(String ip, Instant windowStart);
+        int deleteByTimestampBefore(Instant cutoff);
 }

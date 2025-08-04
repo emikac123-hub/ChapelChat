@@ -34,36 +34,42 @@ public class ChatLogService {
         chatLogRepository.save(chatLog);
     }
 
-    public void saveChatLogAndEnrich(ChatLog chatLog) {
+    @Async
+    public void saveChatLogAndEnrichAsync(ChatLog chatLog, String requestId) {
         // Save initial log
+        log.info("[{}] Saving chat log for session ID: {}", requestId, chatLog.getSessionId());
         saveChatLog(chatLog);
         // Run enrichment in background
-        enrichMetadataAsync(chatLog);
-        this.sendFlagAlertIfNeeded(chatLog);
+        enrichMetadata(chatLog, requestId);
+        this.sendFlagAlertIfNeeded(chatLog, requestId);
     }
 
-    @Async
-    public void enrichMetadataAsync(ChatLog chatLog) {
+    public void enrichMetadata(ChatLog chatLog, String requestId) {
         try {
             Map<String, Object> metadata = aiService.analyzeMetadata(chatLog.getUserQuestion());
             chatLog.setMetadata(metadata);
             saveChatLog(chatLog);
-            log.debug("Metadata enrichment complete for ChatLog {}", chatLog.getId());
+            log.debug("[{}] Metadata enrichment complete for ChatLog {}", requestId, chatLog.getId());
         } catch (Exception e) {
-            log.warn("Metadata enrichment failed for ChatLog {}", chatLog.getId(), e);
+            log.warn("[{}] Metadata enrichment failed for ChatLog {}", requestId, chatLog.getId(), e);
         }
     }
 
     @Async
-    public void sendFlagAlertIfNeeded(ChatLog chatLog) {
+    public void sendFlagAlertIfNeeded(ChatLog chatLog, String requestId) {
         Map<String, Object> meta = chatLog.getMetadata();
-        if (meta == null || !Boolean.TRUE.equals(meta.get(ChatLogMetadataKey.FLAGGED.key())))
+        if (meta == null || !Boolean.TRUE.equals(meta.get(ChatLogMetadataKey.FLAGGED.key()))) {
+            log.debug("[{}] No flag present — skipping alert email for chatLog {}", requestId, chatLog.getId());
             return;
+        }
 
         String reason = String.valueOf(meta.get(ChatLogMetadataKey.FLAG_REASON.key()));
         String contactEmail = profileService.getContactEmailFor(chatLog.getChurchId());
-        if (contactEmail == null || contactEmail.isBlank())
+        if (contactEmail == null || contactEmail.isBlank()) {
+            log.warn("[{}] Flagged message detected, but no contact email found for churchId={}", requestId,
+                    chatLog.getChurchId());
             return;
+        }
 
         String subject = "⚠️ ChapelChat flagged message alert";
         String body = """
@@ -92,20 +98,27 @@ public class ChatLogService {
                 chatLog.getSessionId(),
                 chatLog.getSourceIp());
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(contactEmail);
-        message.setSubject(subject);
-        message.setText(body);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(contactEmail);
+            message.setSubject(subject);
+            message.setText(body);
 
-        mailSender.send(message);
+            mailSender.send(message);
+            log.info("[{}] Flag alert email sent to {} for chatLog {}", requestId, contactEmail, chatLog.getId());
+        } catch (Exception e) {
+            log.error("[{}] Failed to send flag alert email to {} for chatLog {}", requestId, contactEmail,
+                    chatLog.getId(), e);
+        }
     }
 
-    public boolean isMaxSessionCountReached(final AskRequest askRequest, String ip) {
+    public boolean isMaxSessionCountReached(final AskRequest askRequest, String ip, String requestId) {
         if (askRequest.getSessionId() != null) {
             int questionsSoFar = chatLogRepository.countBySessionId(askRequest.getSessionId());
             final var isTooManyQuestions = questionsSoFar >= MAX_QUESTIONS_PER_SESSION;
             if (isTooManyQuestions) {
-                log.warn("Session {} (IP: {}) has exceeded max questions ({}). Count: {}.",
+                log.warn("[{}] Session {} (IP: {}) has exceeded max questions ({}). Count: {}.",
+                        requestId,
                         askRequest.getSessionId(),
                         ip,
                         MAX_QUESTIONS_PER_SESSION,
@@ -116,12 +129,13 @@ public class ChatLogService {
         return false;
     }
 
-    public boolean isTooManyRequestsFromSameIP(String ip) {
+    public boolean isTooManyRequestsFromSameIP(String ip, String requestId) {
         int requestsFromIp = chatLogRepository.countBySourceIpAndTimestampAfter(ip,
                 Instant.now().minus(1, ChronoUnit.HOURS));
         final var isTooMany = requestsFromIp > MAX_QUESTIONS_PER_IP;
         if (isTooMany) {
-            log.warn("Rate limit exceeded for IP {} with {} requests in the last hour", ip, requestsFromIp);
+            log.warn("[{}] Rate limit exceeded for IP {} with {} requests in the last hour", requestId, ip,
+                    requestsFromIp);
             return true;
         }
         return false;

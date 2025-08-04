@@ -2,17 +2,24 @@ package com.erikmikac.ChapelChat.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import com.erikmikac.ChapelChat.exceptions.ChurchProfileNotFoundException;
 import com.erikmikac.ChapelChat.model.ChurchProfile;
+import com.erikmikac.ChapelChat.model.PromptWithChecksum;
 import com.erikmikac.ChapelChat.repository.ChurchRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ChurchProfileService {
 
     private final ChurchRepository churchRepository;
@@ -24,17 +31,19 @@ public class ChurchProfileService {
         this.churchRepository = churchRepository;
     }
 
-    public String getSystemPromptFor(String churchId) throws ChurchProfileNotFoundException {
+    public PromptWithChecksum getSystemPromptAndChecksumFor(String churchId) throws ChurchProfileNotFoundException {
         try {
             ChurchProfile profile = objectMapper.readValue(
                     new ClassPathResource("churches/" + churchId + ".json").getInputStream(),
                     ChurchProfile.class);
-            System.out.println("profile: ");
-            System.out.println(profile);
-            return buildSystemPrompt(profile);
+
+            String prompt = buildSystemPrompt(profile);
+            String checksum = getProfileChecksum(profile);
+
+            return new PromptWithChecksum(prompt, checksum);
 
         } catch (IOException e) {
-            System.out.println(e);
+            log.error("Error: Church Profile Not Found: ", e);
             throw new ChurchProfileNotFoundException("Could not load profile for church: " + churchId, e);
         }
     }
@@ -178,4 +187,30 @@ public class ChurchProfileService {
             throw new RuntimeException("Error writing church profile for " + churchId, e);
         }
     }
+
+    /**
+     * Benefit Description
+     * 🧼 Prevent ghost bugs You can explain why a chatbot gave a weird answer —
+     * "that profile config is old"
+     * 📊 Filter analytics by version Don’t include outdated data in
+     * tone/performance reporting
+     * 🛠️ Trigger reprocessing Re-run logs through the bot after profile updates if
+     * needed
+     * 🧠 Debugging See if hallucinations were tied to specific doctrinal misconfigs
+     * 
+     * @param profile
+     * @return
+     */
+    public String getProfileChecksum(ChurchProfile profile) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String serialized = mapper.writeValueAsString(profile);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(serialized.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to hash profile", e);
+        }
+    }
+
 }

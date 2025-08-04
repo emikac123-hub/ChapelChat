@@ -13,3 +13,8 @@ openai:
         model: ${OPENAI_MODEL:gpt-4o}
         temperature: ${OPENAI_TEMPERATURE:0.7}
         base-url: https://api.openai.com/v1
+cleanup:
+    enabled: ${CLEANUP_ENABLED:true}
+chatlog:
+    retention:
+        days: ${CHATLOG_RETENTION_DAYS:90}

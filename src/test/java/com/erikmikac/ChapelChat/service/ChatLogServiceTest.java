@@ -59,7 +59,7 @@ public class ChatLogServiceTest {
         when(profileService.getContactEmailFor("hope-baptist")).thenReturn("pastor@example.com");
 
         // Act
-        chatLogService.sendFlagAlertIfNeeded(chatLog);
+        chatLogService.sendFlagAlertIfNeeded(chatLog, "123");
 
         // Assert
         ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
@@ -78,7 +78,7 @@ public class ChatLogServiceTest {
                 .metadata(Map.of(ChatLogMetadataKey.FLAGGED.key(), false))
                 .build();
 
-        chatLogService.sendFlagAlertIfNeeded(chatLog);
+        chatLogService.sendFlagAlertIfNeeded(chatLog, "123");
 
         verify(mailSender, never()).send(any(SimpleMailMessage.class));
     }
@@ -94,8 +94,8 @@ public class ChatLogServiceTest {
 
         when(profileService.getContactEmailFor("hope-baptist")).thenReturn(null);
 
-        chatLogService.sendFlagAlertIfNeeded(chatLog);
-        chatLogService.sendFlagAlertIfNeeded(chatLog);
+        chatLogService.sendFlagAlertIfNeeded(chatLog, "123");
+        chatLogService.sendFlagAlertIfNeeded(chatLog, "123");
     
 
         verify(mailSender, never()).send(any(SimpleMailMessage.class));

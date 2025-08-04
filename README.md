@@ -69,3 +69,7 @@ curl -X POST http://localhost:8080/ask \
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+## Scheduled Jobs
+
+- **ChatLogCleanupJob**: This job runs daily at 2:00 AM and deletes chat logs older than 90 days (configurable via the `chatlog.retention.days` property). This helps to keep the database clean and manage storage costs.

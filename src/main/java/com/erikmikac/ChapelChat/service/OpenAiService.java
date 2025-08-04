@@ -72,7 +72,7 @@ public class OpenAiService {
                 Message: "%s"
                 """
                 .formatted(userMessage);
-
+      
         try {
             String rawResponse = this.generateAnswer(analysisPrompt, userMessage); 
             ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +85,7 @@ public class OpenAiService {
             e.printStackTrace();
             return Map.of(ChatLogMetadataKey.INTENT.key(), "unknown", ChatLogMetadataKey.TONE.key(), "unknown",
             ChatLogMetadataKey.OPENAI_MODEL.key(), openAiProperties.getModel(),
-            ChatLogMetadataKey.TEMPERATURE.key(), openAiProperties.getTemperature());
+            ChatLogMetadataKey.TEMPERATURE.key(), openAiProperties.getTemperature() );
         }
     }
 

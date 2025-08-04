@@ -13,8 +13,10 @@ import com.erikmikac.ChapelChat.service.ChurchApiKeyService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class ApiKeyInterceptor implements HandlerInterceptor {
 
     private final ChurchApiKeyService keyService;
@@ -33,7 +35,7 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
         }
 
         String apiKey = request.getHeader("X-Api-Key"); // this is case-insensitive in most servers
-        System.out.println("Extracted API Key: " + apiKey);
+   
 
         if (apiKey == null || apiKey.isBlank()) {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), "Missing API Key");

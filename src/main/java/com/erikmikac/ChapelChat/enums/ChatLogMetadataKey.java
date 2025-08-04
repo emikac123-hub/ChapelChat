@@ -10,7 +10,8 @@ public enum ChatLogMetadataKey {
     PROMPT_INJECTION("promptInjection"),
     OPENAI_MODEL("model"),
     TEMPERATURE("temperature"),
-    USER_AGENT("user-agent");
+    USER_AGENT("user-agent"),
+    PROFILE_CHECKSUM("profileChecksum");
 
     private final String key;
 
