@@ -13,7 +13,7 @@ import com.erikmikac.ChapelChat.model.ChurchProfile;
 import com.erikmikac.ChapelChat.service.ChurchProfileService;
 
 @RestController
-@RequestMapping("/api/church")
+@RequestMapping("/api/v1/church")
 public class ChurchProfileController {
 
     @Autowired

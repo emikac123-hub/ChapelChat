@@ -30,6 +30,6 @@ public class ChatLogCleanupJob {
     public void deleteOldChatLogs() {
         Instant cutoff = Instant.now().minus(Duration.ofDays(retentionDays));
         int deleted = chatLogRepository.deleteByTimestampBefore(cutoff);
-        log.info("🧹 Deleted {} ChatLog entries older than {}", deleted, cutoff);
+        log.info("Deleted {} ChatLog entries older than {}", deleted, cutoff);
     }
 }

@@ -30,7 +30,6 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/ask").permitAll()
                         .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())

@@ -39,7 +39,18 @@ ChapelChat is a powerful, AI-driven chatbot designed to help churches and minist
 3. **Run the application**:
    ```bash
    mvn spring-boot:run
+
+   mvn spring-boot:run -Dspring-boot.run.profiles=local
    ```
+
+## Database
+The app runs on a Postgreql database. Liquibase is ran to version control changes.
+- Run the command below to clear checksums. The user name and password are for local use only.
+```bash
+liquibase clearCheckSums --url=jdbc:postgresql://localhost:5432/chapelchat --username=chapel --password=chapel
+
+```
+
 
 ## Project Structure
 
