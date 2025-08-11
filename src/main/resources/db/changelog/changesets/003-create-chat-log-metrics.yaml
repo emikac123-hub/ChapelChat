@@ -1,0 +1,130 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250803-00-enable-pgcrypto
+      author: erik
+      dbms: postgresql
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+  - changeSet:
+      id: 20250803-01-create-chat-log-metrics
+      author: erik
+      changes:
+        - createTable:
+            tableName: chat_log_metrics
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: chat_log_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_tokens
+                  type: INT
+              - column:
+                  name: response_tokens
+                  type: INT
+              - column:
+                  name: total_tokens
+                  type: INT
+              - column:
+                  name: latency_ms
+                  type: INT
+              - column:
+                  name: model
+                  type: VARCHAR(100)
+              - column:
+                  name: cost_usd
+                  type: DECIMAL(10,5)
+              - column:
+                  name: flagged
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+        # Helpful index for joins
+        - createIndex:
+            indexName: idx_chat_log_metrics_chat_log_id
+            tableName: chat_log_metrics
+            columns:
+              - column:
+                  name: chat_log_id
+
+        # ✅ Correct FK: chat_log_metrics.chat_log_id → chat_logs.id
+        - addForeignKeyConstraint:
+            baseTableName: chat_log_metrics
+            baseColumnNames: chat_log_id
+            referencedTableName: chat_logs
+            referencedColumnNames: id
+            constraintName: fk_chat_log_metrics_chat_log
+            onDelete: CASCADE
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: chat_log_metrics
+            constraintName: fk_chat_log_metrics_chat_log
+        - dropIndex:
+            indexName: idx_chat_log_metrics_chat_log_id
+            tableName: chat_log_metrics
+        - dropTable:
+            tableName: chat_log_metrics
+  - changeSet:
+      id: 20250803-00-seed-chat-log
+      author: erik
+      context: dev
+      changes:
+        - insert:
+            tableName: chat_log_metrics
+            columns:
+              - column: { name: id, valueComputed: "gen_random_uuid()" }
+              - column: { name: chat_log_id, value: "5f2a3b9e-22fd-4d7c-9b32-5de0bb6e7a11" }
+              - column: { name: timestamp, value: "2025-08-02 14:32:00" }
+              - column: { name: request_tokens, valueNumeric: 87 }
+              - column: { name: response_tokens, valueNumeric: 162 }
+              - column: { name: total_tokens, valueNumeric: 249 }
+              - column: { name: latency_ms, valueNumeric: 531 }
+              - column: { name: model, value: "gpt-4o" }
+              - column: { name: cost_usd, valueNumeric: 0.00074 }
+              - column: { name: flagged, valueBoolean: false }
+
+        - insert:
+            tableName: chat_log_metrics
+            columns:
+              - column: { name: id, valueComputed: "gen_random_uuid()" }
+              - column: { name: chat_log_id, value: "9c8d7b2a-6f41-4a79-8c1d-29d0a5f2e3b4" }
+              - column: { name: timestamp, value: "2025-08-02 14:32:00" }
+              - column: { name: request_tokens, valueNumeric: 45 }
+              - column: { name: response_tokens, valueNumeric: 98 }
+              - column: { name: total_tokens, valueNumeric: 143 }
+              - column: { name: latency_ms, valueNumeric: 288 }
+              - column: { name: model, value: "gpt-3.5-turbo" }
+              - column: { name: cost_usd, valueNumeric: 0.00019 }
+              - column: { name: flagged, valueBoolean: true }
+
+        - insert:
+            tableName: chat_log_metrics
+            columns:
+              - column: { name: id, valueComputed: "gen_random_uuid()" }
+              - column: { name: chat_log_id, value: "2b5a9d71-1f23-4e94-b6aa-0b0fae55c6d2" }
+              - column: { name: timestamp, value: "2025-08-02 14:32:00" }
+              - column: { name: request_tokens, valueNumeric: 112 }
+              - column: { name: response_tokens, valueNumeric: 185 }
+              - column: { name: total_tokens, valueNumeric: 297 }
+              - column: { name: latency_ms, valueNumeric: 650 }
+              - column: { name: model, value: "gpt-4" }
+              - column: { name: cost_usd, valueNumeric: 0.00113 }
+              - column: { name: flagged, valueBoolean: false }
