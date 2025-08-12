@@ -21,6 +21,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.enums.ChatLogMetadataKey;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
+import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
 
 public class ChatLogServiceTest {
 

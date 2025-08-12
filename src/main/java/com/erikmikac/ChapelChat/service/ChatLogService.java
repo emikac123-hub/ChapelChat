@@ -13,6 +13,7 @@ import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.enums.ChatLogMetadataKey;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
+import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

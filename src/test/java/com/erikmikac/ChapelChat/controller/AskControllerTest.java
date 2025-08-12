@@ -10,8 +10,8 @@ import com.erikmikac.ChapelChat.model.AskResponse;
 import com.erikmikac.ChapelChat.service.AskService;
 import com.erikmikac.ChapelChat.service.ChatLogService;
 import com.erikmikac.ChapelChat.service.ChurchApiKeyService;
-import com.erikmikac.ChapelChat.service.ChurchProfileService;
 import com.erikmikac.ChapelChat.service.OpenAiService;
+import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

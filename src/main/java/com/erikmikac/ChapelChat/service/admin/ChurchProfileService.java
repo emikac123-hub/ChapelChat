@@ -1,4 +1,4 @@
-package com.erikmikac.ChapelChat.service;
+package com.erikmikac.ChapelChat.service.admin;
 
 import java.io.File;
 import java.io.IOException;

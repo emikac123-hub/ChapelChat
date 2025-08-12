@@ -12,6 +12,13 @@ databaseChangeLog:
   - changeSet:
       id: 20250803-01-create-chat-log-metrics
       author: erik
+      preConditions: 
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: chat_logs
+        - not:
+            - tableExists:
+                tableName: chat_log_metrics
       changes:
         - createTable:
             tableName: chat_log_metrics
@@ -85,7 +92,7 @@ databaseChangeLog:
   - changeSet:
       id: 20250803-00-seed-chat-log
       author: erik
-      context: dev
+      context: seed
       changes:
         - insert:
             tableName: chat_log_metrics

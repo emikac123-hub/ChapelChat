@@ -139,6 +139,11 @@ databaseChangeLog:
   - changeSet:
         id: 20250811-02-slug-citext-unique
         author: erik
+        comments: >
+          Switch slug to CITEXT and enforce a real UNIQUE(slug) constraint to get
+          case-insensitive uniqueness at the column level and allow standard
+          `ON CONFLICT (slug)` upserts. Drops the old functional unique index on
+          lower(slug) which couldn’t be targeted by `ON CONFLICT`.
         changes:
         - dropIndex:
             tableName: church_profile

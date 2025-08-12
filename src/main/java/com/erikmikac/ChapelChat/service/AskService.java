@@ -19,6 +19,7 @@ import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.model.AskResponse;
 import com.erikmikac.ChapelChat.model.FlagResponse;
 import com.erikmikac.ChapelChat.model.PromptWithChecksum;
+import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
 import com.erikmikac.ChapelChat.util.ChatLogMetadataBuilder;
 
 import jakarta.servlet.http.HttpServletRequest;

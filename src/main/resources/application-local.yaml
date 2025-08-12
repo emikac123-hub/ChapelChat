@@ -16,6 +16,10 @@ spring:
     password: chapel
     hikari:
       maximum-pool-size: 5
+  liquibase:
+    contexts:
+      - dev
+      - seed
   jpa:
     hibernate:
       ddl-auto: update

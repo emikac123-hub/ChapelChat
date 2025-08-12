@@ -105,6 +105,7 @@ databaseChangeLog:
   - changeSet:
       id: 4-seed-hope-baptist
       author: chapelchat
+      context: seed
       changes:
         - insert:
             tableName: church
