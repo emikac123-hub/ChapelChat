@@ -16,6 +16,7 @@ public class AnalyticsService {
   }
 
   public SummaryDto fetchSummary(String churchId, OffsetDateTime from, OffsetDateTime to) {
-    return repo.fetchSummary(churchId, from, to);
+    return null;
+ //   return repo.fetchSummary(churchId, from, to);
   }
 }

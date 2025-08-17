@@ -22,8 +22,15 @@ spring:
       - seed
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate   # or none; Liquibase owns schema
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
   h2:
     console:
-      enabled: true
+      enabled: false
+logging:
+  level:
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.boot.autoconfigure.orm.jpa: DEBUG
+    org.hibernate: INFO
