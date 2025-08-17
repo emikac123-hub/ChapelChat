@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250817-01-create-church
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: church
+      changes:
+        - createTable:
+            tableName: church
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: allowed_origin
+                  type: VARCHAR(255)
+      rollback:
+        - dropTable:
+            tableName: church
