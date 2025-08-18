@@ -1,0 +1,36 @@
+# src/main/resources/db/changelog/0001-core.yml
+databaseChangeLog:
+  - changeSet:
+      id: 0001-core-create-schema
+      author: erik
+      changes:
+        - sql: "create schema if not exists public"
+      rollback:
+        - sql: "/* keep default public schema */"
+
+  - changeSet:
+      id: 0001-core-uuid-extension
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - dbms:
+            type: postgresql
+      changes:
+        - sql: "create extension if not exists \"uuid-ossp\""
+      rollback:
+        - sql: "drop extension if exists \"uuid-ossp\""
+
+  # Optional: a table for schema version notes
+  - changeSet:
+      id: 0001-core-metadata
+      author: erik
+      changes:
+        - createTable:
+            tableName: schema_metadata
+            columns:
+              - column: { name: id, type: BIGSERIAL, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: note, type: TEXT }
+              - column: { name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+      rollback:
+        - dropTable:
+            tableName: schema_metadata

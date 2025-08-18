@@ -1,0 +1,25 @@
+# src/main/resources/db/changelog/0005-fk-chat-log-metrics.yml
+databaseChangeLog:
+  - changeSet:
+      id: 0005-add-fk-chat-log-metrics-chat-log
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists: { tableName: chat_log_metrics }
+        - tableExists: { tableName: chat_logs }
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_chat_log_metrics_chat_log
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: chat_log_metrics
+            baseColumnNames: chat_log_id
+            referencedTableName: chat_logs
+            referencedColumnNames: id
+            constraintName: fk_chat_log_metrics_chat_log
+            onDelete: CASCADE
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: chat_log_metrics
+            constraintName: fk_chat_log_metrics_chat_log

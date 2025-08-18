@@ -1,0 +1,109 @@
+# src/main/resources/db/changelog/0002-app-user.yml
+databaseChangeLog:
+  - changeSet:
+      id: 0002-app-user-create
+      author: erik
+      changes:
+        - createTable:
+            tableName: app_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: display_name
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: church_id
+                  type: VARCHAR(128)         # nullable; FK added below when church table exists
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: email
+            constraintName: uq_app_user_email
+      rollback:
+        - dropTable:
+            tableName: app_user
+
+  # Add FK to church.id once both tables are present
+  - changeSet:
+      id: 0002-app-user-fk-church
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: app_user
+        - tableExists:
+            tableName: church
+        - columnExists:
+            tableName: app_user
+            columnName: church_id
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_app_user_church
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: app_user
+            baseColumnNames: church_id
+            referencedTableName: church
+            referencedColumnNames: id
+            constraintName: fk_app_user_church
+            onDelete: SET NULL
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: app_user
+            constraintName: fk_app_user_church
+
+  # Optional trigger to auto-update updated_at (Postgres)
+  - changeSet:
+      id: 0002-app-user-updated-at-trigger
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - dbms:
+            type: postgresql
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: false
+            sql: |
+              CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+        - sql: |
+            DROP TRIGGER IF EXISTS app_user_set_updated_at ON app_user;
+            CREATE TRIGGER app_user_set_updated_at
+            BEFORE UPDATE ON app_user
+            FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+      rollback:
+        - sql: "DROP TRIGGER IF EXISTS app_user_set_updated_at ON app_user;"
+        - sql: "DROP FUNCTION IF EXISTS set_updated_at();"

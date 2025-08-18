@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-chat-log-metrics
+      author: erik
+      changes:
+        - createTable:
+            tableName: chat_log_metrics
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: chat_log_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: church_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_tokens
+                  type: INT
+              - column:
+                  name: response_tokens
+                  type: INT
+              - column:
+                  name: total_tokens
+                  type: INT
+              - column:
+                  name: latency_ms
+                  type: INT
+              - column:
+                  name: model
+                  type: VARCHAR(255)
+              - column:
+                  name: cost_usd
+                  type: NUMERIC(10,5)
+              - column:
+                  name: flagged
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+        - addForeignKeyConstraint:
+            baseTableName: chat_log_metrics
+            baseColumnNames: chat_log_id
+            referencedTableName: chat_logs
+            referencedColumnNames: id
+            constraintName: fk_chat_log_metrics_chat_logs
+            onDelete: CASCADE
+            onUpdate: CASCADE
