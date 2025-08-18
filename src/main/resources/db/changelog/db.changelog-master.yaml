@@ -2,4 +2,18 @@ databaseChangeLog:
   - logicalFilePath: db/changelog/db.changelog-master.yaml
 
   - include:
-      file: db/changelog/changesets/01-create-church.yaml
+      file: db/changelog/changesets/001-core.yaml
+  - include:
+      file: db/changelog/changesets/002-create-church.yaml
+  - include:
+      file: db/changelog/changesets/002-app-user.yaml
+  - include:
+      file: db/changelog/changesets/003-chat-logs.yaml
+  - include:
+      file: db/changelog/changesets/004-chat-log-metrics.yaml
+  - include:
+      file: db/changelog/changesets/005-add-fk-chat-log-metrics.yaml
+  - include:
+      file: db/changelog/changesets/006-api-keys.yaml
+  - include:
+      file: db/changelog/changesets/007-app-user-roles.yaml
