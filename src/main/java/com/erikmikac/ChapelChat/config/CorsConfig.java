@@ -17,19 +17,37 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                if ("local".equals(activeProfile)) {
+
+                boolean isLocal = activeProfile != null &&
+                        (activeProfile.contains("local") || activeProfile.contains("dev"));
+
+                if (isLocal) {
                     registry.addMapping("/**")
-                            .allowedOrigins("*")
+                            .allowedOriginPatterns("http://localhost:*")
                             .allowedMethods("*")
-                            .allowedHeaders("*");
-                } else {
-                    registry.addMapping("/ask")
-                            .allowedOrigins("http://localhost:3000", "http://localhost:5176","http://localhost:5177", "https://super-haupia-aa6453.netlify.app")
-                            .allowedMethods("POST", "OPTIONS")
-                            .allowedHeaders("Content-Type", "X-Api-Key")
+                            .allowedHeaders("*")
                             .allowCredentials(false)
                             .maxAge(3600);
+                    return;
                 }
+
+                // Public widget endpoint
+                registry.addMapping("/ask")
+                        .allowedOriginPatterns("http://localhost:*", "https://*.netlify.app")
+                        .allowedMethods("POST", "OPTIONS")
+                        .allowedHeaders("Content-Type", "Accept", "X-API-KEY")
+                        .exposedHeaders() // add if you need to expose any
+                        .allowCredentials(false)
+                        .maxAge(3600);
+
+                // Future dashboard API (JWT / cookies)
+                registry.addMapping("/api/**")
+                        .allowedOriginPatterns("http://localhost:*", "https://*.yourdashboard.tld")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                        .allowedHeaders("Content-Type", "Accept", "Authorization")
+                        .exposedHeaders()
+                        .allowCredentials(true) // if you go cookie-based; set to false if using pure Bearer tokens
+                        .maxAge(3600);
             }
         };
     }

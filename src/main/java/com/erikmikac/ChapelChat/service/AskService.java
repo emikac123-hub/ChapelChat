@@ -19,6 +19,9 @@ import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.model.AskResponse;
 import com.erikmikac.ChapelChat.model.FlagResponse;
 import com.erikmikac.ChapelChat.model.PromptWithChecksum;
+import com.erikmikac.ChapelChat.model.admin.ResolvedKey;
+import com.erikmikac.ChapelChat.service.admin.ApiKeyService;
+import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
 import com.erikmikac.ChapelChat.util.ChatLogMetadataBuilder;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,13 +37,13 @@ public class AskService {
     private final ChatLogService chatLogService;
     private final ChurchProfileService profileService;
     private final OpenAiService aiService;
-    private final ChurchApiKeyService apiKeyService;
+    private final ApiKeyService apiKeyService;
     private final InputSanitizationService sanitizer;
 
     public AskService(ChurchProfileService profileService,
             OpenAiService aiService,
             ChatLogService chatLogService,
-            ChurchApiKeyService apiKeyService,
+            ApiKeyService apiKeyService,
             InputSanitizationService sanitizer, OpenAiProperties openAiProperties) {
         this.profileService = profileService;
         this.aiService = aiService;
@@ -84,7 +87,7 @@ public class AskService {
         }
 
         try {
-            
+
             final String answer = aiService.generateAnswer(prompt.systemPrompt(), question);
 
             final ChatLog chatLog = buildChatLog(askContext);
@@ -130,8 +133,9 @@ public class AskService {
                 .orElse(request.getRemoteAddr());
     }
 
-    private Optional<String> getChurchIdFromApiKey(String apiKey) {
-        return apiKeyService.getChurchIdForValidKey(apiKey);
+    private Optional<String> getChurchIdFromApiKey(String presentedKey) {
+        return Optional.ofNullable(apiKeyService.resolve(presentedKey))
+                .map(ResolvedKey::churchId);
     }
 
     private ResponseEntity<AskResponse> handleUnsafeMessage(AskContext context) {

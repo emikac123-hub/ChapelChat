@@ -20,13 +20,18 @@ ChapelChat is a powerful, AI-driven chatbot designed to help churches and minist
 ### Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/your-username/ChapelChat.git
    ```
+
 2. **Configure the application**:
+
    - Create a `application-local.yaml` file in `src/main/resources`.
    - Add your PostgreSQL and OpenAI API key details:
-     ```yaml
+   
+        ```yaml
+
      spring:
        datasource:
          url: jdbc:postgresql://localhost:5432/your-db
@@ -36,10 +41,25 @@ ChapelChat is a powerful, AI-driven chatbot designed to help churches and minist
        api:
          key: your-openai-api-key
      ```
+
 3. **Run the application**:
+
    ```bash
    mvn spring-boot:run
+
+   mvn spring-boot:run -Dspring-boot.run.profiles=local
    ```
+
+## Database
+
+The app runs on a Postgreql database. Liquibase is ran to version control changes.
+
+- Run the command below to clear checksums. The user name and password are for local use only.
+
+```bash
+liquibase clearCheckSums --url=jdbc:postgresql://localhost:5432/chapelchat --username=chapel --password=chapel
+
+```
 
 ## Project Structure
 
