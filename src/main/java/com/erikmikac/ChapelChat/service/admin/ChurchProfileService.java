@@ -163,7 +163,7 @@ public class ChurchProfileService {
     }
 
     public String getContactEmailFor(String churchId) {
-        return churchRepository.findContactEmailByChurchId(churchId)
+        return churchRepository.findContactEmailById(churchId)
                 .orElse(null); // Or throw if you prefer
     }
 

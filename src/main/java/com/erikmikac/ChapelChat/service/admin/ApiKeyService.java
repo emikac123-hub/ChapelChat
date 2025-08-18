@@ -60,7 +60,7 @@ public class ApiKeyService {
   /** List keys for the current tenant (masked). */
   @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public java.util.List<KeyViewDto> listKeys(String churchId) {
-    return repo.findByChurchIdAndRevokedAtIsNullOrderByCreatedAtDesc(churchId).stream()
+    return repo.findByChurch_IdAndRevokedAtIsNullOrderByCreatedAtDesc(churchId).stream()
         .map(k -> new KeyViewDto(
             k.getId().toString(),
             mask(k.getTokenHash()), // we don’t have plaintext; mask by hash fingerprint
