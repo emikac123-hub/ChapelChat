@@ -15,10 +15,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class TenantFilter extends OncePerRequestFilter {
 
-  //  private final ApiKeyService apiKeys; // can be @Lazy if needed
+    private final ApiKeyService apiKeys; // can be @Lazy if needed
 
     public TenantFilter(ApiKeyService apiKeys) {
-   //     this.apiKeys = apiKeys;
+        this.apiKeys = apiKeys;
     }
 
     @Override
@@ -48,10 +48,9 @@ public class TenantFilter extends OncePerRequestFilter {
         // B) Widget/API with API key
         String apiKey = firstNonBlank(req.getHeader("X-Api-Key"), req.getHeader("x-api-key"));
         if (apiKey != null) {
-            // var resolved = apiKeys.resolve(apiKey); // returns {id, churchId} or null
-            // if (resolved != null)
-            //     return resolved.churchId();
-            return "";
+            var resolved = apiKeys.resolve(apiKey); // returns {id, churchId} or null
+            if (resolved != null)
+                return resolved.churchId();
         }
 
         // C) Optional: subdomain fallback (no DB call here)

@@ -37,7 +37,7 @@ public class AskService {
     private final ChatLogService chatLogService;
     private final ChurchProfileService profileService;
     private final OpenAiService aiService;
-    private final ApiKeyService apiKeyService;
+    private ApiKeyService apiKeyService;
     private final InputSanitizationService sanitizer;
 
     public AskService(ChurchProfileService profileService,
@@ -54,22 +54,22 @@ public class AskService {
     }
 
     public ResponseEntity<AskResponse> processAsk(AskRequest askRequest, HttpServletRequest request) {
-        final String requestId = UUID.randomUUID().toString();
+        String requestId = UUID.randomUUID().toString();
         log.info("[{}] Ask request received for session: {}", requestId, askRequest.getSessionId());
 
-        final String ip = extractClientIp(request);
-        final String apiKey = request.getHeader("X-Api-Key");
-        final Optional<String> churchIdOpt = getChurchIdFromApiKey(apiKey);
+        String ip = extractClientIp(request);
+        String apiKey = request.getHeader("X-Api-Key");
+        Optional<String> churchIdOpt = getChurchIdFromApiKey(apiKey);
 
         if (churchIdOpt.isEmpty()) {
             log.warn("[{}] Invalid API key from IP: {}", requestId, ip);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new AskResponse("Invalid or revoked API key."));
         }
-        final String churchId = churchIdOpt.get();
-        final String userAgent = request.getHeader("User-Agent");
-        final String question = askRequest.getMessage();
-        final Optional<ResponseEntity<AskResponse>> maybePromptInjection = validateAskRequest(askRequest);
+        String churchId = churchIdOpt.get();
+        String userAgent = request.getHeader("User-Agent");
+        String question = askRequest.getMessage();
+        Optional<ResponseEntity<AskResponse>> maybePromptInjection = validateAskRequest(askRequest);
         PromptWithChecksum prompt = null;
 
         try {
@@ -79,7 +79,7 @@ public class AskService {
             return ResponseEntity.badRequest().body(new AskResponse("That church's profile could not be found."));
         }
 
-        final var askContext = new AskContext(askRequest, churchId, ip, userAgent, prompt.systemPrompt(),
+        var askContext = new AskContext(askRequest, churchId, ip, userAgent, prompt.systemPrompt(),
                 prompt.profileChecksum(), requestId);
 
         if (!sanitizer.isSafe(askRequest.getMessage())) {
@@ -88,16 +88,16 @@ public class AskService {
 
         try {
 
-            final String answer = aiService.generateAnswer(prompt.systemPrompt(), question);
+            String answer = aiService.generateAnswer(prompt.systemPrompt(), question);
 
-            final ChatLog chatLog = buildChatLog(askContext);
+            ChatLog chatLog = buildChatLog(askContext);
 
             if (maybePromptInjection.isPresent()) {
                 handlePromptInjection(chatLog, churchId, userAgent);
                 return maybePromptInjection.get();
             }
             if (chatLogService.isMaxSessionCountReached(askRequest, ip, askContext.requestId())) {
-                final var flagResponse = new FlagResponse("question_limit_per_session_exceeded",
+                var flagResponse = new FlagResponse("question_limit_per_session_exceeded",
                         "You've reached the maximum number of questions for this session.");
                 return handleRateLimitExceeded(chatLog, flagResponse,
                         askContext);
@@ -134,7 +134,8 @@ public class AskService {
     }
 
     private Optional<String> getChurchIdFromApiKey(String presentedKey) {
-        return Optional.ofNullable(apiKeyService.resolve(presentedKey))
+        ResolvedKey apiKey = apiKeyService.resolve(presentedKey);
+        return Optional.ofNullable(apiKey)
                 .map(ResolvedKey::churchId);
     }
 

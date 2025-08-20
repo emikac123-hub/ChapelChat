@@ -6,7 +6,9 @@ import com.erikmikac.ChapelChat.entity.ApiKey;
 import com.erikmikac.ChapelChat.model.admin.KeyViewDto;
 import com.erikmikac.ChapelChat.model.admin.NewKeyDto;
 import com.erikmikac.ChapelChat.model.admin.ResolvedKey;
-import com.erikmikac.ChapelChat.repository.ApiKeyRepository;;
+import com.erikmikac.ChapelChat.repository.ApiKeyRepository;
+
+import jakarta.transaction.Transactional;;
 // Service
 @org.springframework.stereotype.Service
 public class ApiKeyService {
@@ -73,7 +75,7 @@ public class ApiKeyService {
    * Resolve a presented plaintext key into (id, churchId), or return null if invalid/revoked.
    * Also updates last_used_at, with a throttle to avoid a write per request.
    */
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public ResolvedKey resolve(String presentedPlaintext) {
     if (presentedPlaintext == null || presentedPlaintext.isBlank()) return null;
     var hash = hashKey(presentedPlaintext, pepper);
