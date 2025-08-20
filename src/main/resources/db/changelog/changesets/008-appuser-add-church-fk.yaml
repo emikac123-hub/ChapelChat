@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250819-01-appuser-add-church-fk
+      author: erik
+      changes:
+        - addColumn:
+            tableName: app_user
+            columns:
+              - column:
+                  name: church_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false   # see migration path below
+        - addForeignKeyConstraint:
+            baseTableName: app_user
+            baseColumnNames: church_id
+            referencedTableName: church
+            referencedColumnNames: id
+            constraintName: fk_app_user_church
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+        - createIndex:
+            indexName: idx_app_user_church
+            tableName: app_user
+            columns:
+              - column:
+                  name: church_id
+        # Optional: ensure usernames are unique *within* a church
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: church_id,username
+            constraintName: uq_app_user_church_username

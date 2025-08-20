@@ -3,6 +3,7 @@ package com.erikmikac.ChapelChat.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -65,13 +66,12 @@ public class ChatLogService {
         }
 
         String reason = String.valueOf(meta.get(ChatLogMetadataKey.FLAG_REASON.key()));
-        String contactEmail = profileService.getContactEmailFor(chatLog.getChurchId());
-        if (contactEmail == null || contactEmail.isBlank()) {
-            log.warn("[{}] Flagged message detected, but no contact email found for churchId={}", requestId,
+        Set<String> contactEmails = profileService.getContactEmailFor(chatLog.getChurchId());
+        if (contactEmails == null || contactEmails.isEmpty()) {
+            log.warn("[{}] Flagged message detected, but no contact emails found for churchId={}", requestId,
                     chatLog.getChurchId());
             return;
         }
-
         String subject = "⚠️ ChapelChat flagged message alert";
         String body = """
                 A flagged message was detected for %s:
@@ -98,19 +98,20 @@ public class ChatLogService {
                 chatLog.getTimestamp(),
                 chatLog.getSessionId(),
                 chatLog.getSourceIp());
-
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(contactEmail);
-            message.setSubject(subject);
-            message.setText(body);
-
-            mailSender.send(message);
-            log.info("[{}] Flag alert email sent to {} for chatLog {}", requestId, contactEmail, chatLog.getId());
-        } catch (Exception e) {
-            log.error("[{}] Failed to send flag alert email to {} for chatLog {}", requestId, contactEmail,
-                    chatLog.getId(), e);
+        for (final String contactEmail : contactEmails) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(contactEmail);
+                message.setSubject(subject);
+                message.setText(body);
+                mailSender.send(message);
+                log.info("[{}] Flag alert email sent to {} for chatLog {}", requestId, contactEmails, chatLog.getId());
+            } catch (Exception e) {
+                log.error("[{}] Failed to send flag alert email to {} for chatLog {}", requestId, contactEmails,
+                        chatLog.getId(), e);
+            }
         }
+
     }
 
     public boolean isMaxSessionCountReached(final AskRequest askRequest, String ip, String requestId) {

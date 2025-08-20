@@ -28,6 +28,8 @@ public interface ChatLogRepository extends JpaRepository<ChatLog, UUID> {
 
         int countBySessionId(UUID sessionId);
 
+        // Used to make sure no one is spamming the bot.
         int countBySourceIpAndTimestampAfter(String ip, Instant windowStart);
+        
         int deleteByTimestampBefore(Instant cutoff);
 }

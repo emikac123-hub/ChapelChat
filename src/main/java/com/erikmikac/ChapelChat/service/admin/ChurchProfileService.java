@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.HashSet;
 import java.util.HexFormat;
+import java.util.Set;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.erikmikac.ChapelChat.exceptions.ChurchProfileNotFoundException;
 import com.erikmikac.ChapelChat.model.ChurchProfile;
 import com.erikmikac.ChapelChat.model.PromptWithChecksum;
+import com.erikmikac.ChapelChat.repository.AppUserRepository;
 import com.erikmikac.ChapelChat.repository.ChurchRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,10 +28,13 @@ public class ChurchProfileService {
     private final ChurchRepository churchRepository;
     private static final String PROFILE_DIR = "src/main/resources/churches/";
     private final ObjectMapper objectMapper;
+    private final AppUserRepository appUserRepository;
 
-    public ChurchProfileService(ObjectMapper objectMapper, ChurchRepository churchRepository) {
+    public ChurchProfileService(ObjectMapper objectMapper, ChurchRepository churchRepository,
+            final AppUserRepository appUserRepository) {
         this.objectMapper = objectMapper;
         this.churchRepository = churchRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     public PromptWithChecksum getSystemPromptAndChecksumFor(String churchId) throws ChurchProfileNotFoundException {
@@ -162,9 +168,10 @@ public class ChurchProfileService {
         return prompt.toString().trim();
     }
 
-    public String getContactEmailFor(String churchId) {
-        return churchRepository.findContactEmailById(churchId)
-                .orElse(null); // Or throw if you prefer
+    public Set<String> getContactEmailFor(String churchId) {
+        return churchRepository.findAdminEmailsOptional(churchId) 
+                .map(HashSet::new) // copy into a mutable HashSet
+                .orElseGet(HashSet::new);
     }
 
     public ChurchProfile getProfile(String churchId) {
@@ -190,13 +197,13 @@ public class ChurchProfileService {
 
     /**
      * Benefit Description
-     * 🧼 Prevent ghost bugs You can explain why a chatbot gave a weird answer —
+     * Prevent ghost bugs You can explain why a chatbot gave a weird answer —
      * "that profile config is old"
-     * 📊 Filter analytics by version Don’t include outdated data in
+     * Filter analytics by version Don’t include outdated data in
      * tone/performance reporting
-     * 🛠️ Trigger reprocessing Re-run logs through the bot after profile updates if
+     * Trigger reprocessing Re-run logs through the bot after profile updates if
      * needed
-     * 🧠 Debugging See if hallucinations were tied to specific doctrinal misconfigs
+     * Debugging See if hallucinations were tied to specific doctrinal misconfigs
      * 
      * @param profile
      * @return
