@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/ask")
+@RequestMapping
 @Slf4j
 @Validated
 public class AskController {

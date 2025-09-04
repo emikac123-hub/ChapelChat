@@ -21,14 +21,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.erikmikac.ChapelChat.config.ApiKeyInterceptor;
+import com.erikmikac.ChapelChat.enums.OrgType;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.model.AskResponse;
+import com.erikmikac.ChapelChat.model.admin.ResolvedKey;
 import com.erikmikac.ChapelChat.service.AskService;
 import com.erikmikac.ChapelChat.service.admin.ApiKeyService;
 import com.erikmikac.ChapelChat.tenant.TenantContext;
+import com.erikmikac.ChapelChat.tenant.TenantFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @WebMvcTest(controllers = AskController.class, excludeAutoConfiguration = {
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
 })
-@Import(TestMvcConfig.class)
+@Import({TestMvcConfig.class, TenantFilter.class})
 class AskControllerTest {
 
     @Autowired
@@ -56,10 +60,8 @@ class AskControllerTest {
     @BeforeEach
     void setTenant() throws Exception {
         when(apiKeyInterceptor.preHandle(any(), any(), any())).thenReturn(true);
-        TenantContext.set(new TenantContext.Context(
-                /* orgId */ "org-1",
-                /* tenantId */ "default",
-                /* orgType */ TenantContext.OrgType.CHURCH));
+        when(apiKeyService.resolve(anyString()))
+                .thenReturn(new ResolvedKey("key-id", "org-1", "default", OrgType.CHURCH));
     }
 
     @AfterEach
@@ -82,6 +84,7 @@ class AskControllerTest {
                 .thenReturn(ResponseEntity.ok(new AskResponse("10am on Sunday")));
 
         mockMvc.perform(post("/ask")
+                .header("X-Api-Key", "test-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json("message", "What time is service?", "sessionId", UUID.randomUUID().toString()))
                 .header("User-Agent", "JUnit/MockMvc")
@@ -101,9 +104,11 @@ class AskControllerTest {
                 .thenReturn(ResponseEntity.badRequest().body(new AskResponse("The message is empty.")));
 
         mockMvc.perform(post("/ask")
+                .header("X-Api-Key", "test-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json("message", " ", "sessionId", UUID.randomUUID().toString())))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(Matchers.containsString("empty")));
     }
 }
+

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-@Service // <-- this is crucial
+@Service 
 class AllowedOriginServiceImpl implements AllowedOriginService {
     @Override
     public List<String> getAllowedOrigins(String tenantId, String orgId) {
