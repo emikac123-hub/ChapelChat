@@ -2,3 +2,10 @@ openai:
   api:
     base-url: http://localhost:8089
     key: mock
+
+spring:
+
+  mail:
+    host: localhost
+    port: 2525
+    test-connection: false

@@ -1,55 +1,56 @@
 package com.erikmikac.ChapelChat.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import com.erikmikac.ChapelChat.tenant.TenantContext;
-
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
 
-    @Bean(name = "chapelCorsConfigurationSource") // avoid default name collision
-    @SuppressWarnings("Convert2Lambda")
-    public CorsConfigurationSource corsConfigurationSource() {
-        return new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                // === your existing logic, just not as a lambda ===
-                boolean isLocal = false; // put your profile check here if needed
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
-                CorsConfiguration cfg = new CorsConfiguration();
-                cfg.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-                cfg.setAllowedHeaders(java.util.List.of(
-                    "Content-Type","Accept","Authorization","X-API-Key","X-Api-Key"));
-                cfg.setExposedHeaders(java.util.List.of("Retry-After"));
-                cfg.setMaxAge(1800L);
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+
+                boolean isLocal = activeProfile != null &&
+                        (activeProfile.contains("local") || activeProfile.contains("dev"));
 
                 if (isLocal) {
-                    cfg.setAllowCredentials(false);
-                    cfg.setAllowedOriginPatterns(java.util.List.of("http://localhost:*","http://127.0.0.1:*"));
-                    return cfg;
+                    registry.addMapping("/**")
+                            .allowedOriginPatterns("http://localhost:*")
+                            .allowedMethods("*")
+                            .allowedHeaders("*")
+                            .allowCredentials(false)
+                            .maxAge(3600);
+                    return;
                 }
 
-                var ctx = TenantContext.get();
-                if (ctx == null || ctx.getOrgId() == null) {
-                    return null; // deny (no CORS headers)
-                }
+                // Public widget endpoint
+                registry.addMapping("/ask")
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("POST", "OPTIONS")
+                        .allowedHeaders("Content-Type", "Accept", "X-API-KEY")
+                        .exposedHeaders() // add if you need to expose any
+                        .allowCredentials(false)
+                        .maxAge(3600);
 
-                boolean usesCookies = false;
-                java.util.List<String> origins =
-                    /* allowedOriginService.getAllowedOrigins(ctx.getTenantId(), ctx.getOrgId()) */ java.util.List.of();
-
-                cfg.setAllowCredentials(usesCookies);
-                if (usesCookies) {
-                    cfg.setAllowedOrigins(origins);          // exact origins only
-                } else {
-                    cfg.setAllowedOriginPatterns(origins);   // allow patterns when no cookies
-                }
-                return cfg;
+                // Future dashboard API (JWT / cookies)
+                registry.addMapping("/api/**")
+                        // Explicit origins are required when credentials are allowed
+                        // to avoid Spring's wildcard + credentials restriction
+                        .allowedOrigins("http://localhost:8080/ask")
+                        .allowedOriginPatterns("*")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                        .allowedHeaders("Content-Type", "Accept", "Authorization")
+                        .exposedHeaders()
+                        .allowCredentials(false) // if you go cookie-based; set to false if using pure Bearer tokens
+                        .maxAge(3600);
             }
         };
     }

@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.erikmikac.ChapelChat.config.ApiKeyInterceptor;
@@ -41,6 +42,7 @@ import jakarta.servlet.http.HttpServletRequest;
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
 })
 @Import({TestMvcConfig.class, TenantFilter.class})
+@ActiveProfiles("test")
 class AskControllerTest {
 
     @Autowired

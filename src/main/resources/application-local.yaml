@@ -1,6 +1,6 @@
 spring:
   mail:
-    host: smtp.gmail.com
+    host: localhost
     port: 587
     username: your-email@yourdomain.com
     password: your-password
@@ -31,3 +31,4 @@ logging:
     org.springframework.orm.jpa: DEBUG
     org.springframework.boot.autoconfigure.orm.jpa: DEBUG
     org.hibernate: INFO
+
