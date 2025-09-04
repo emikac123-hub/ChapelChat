@@ -54,7 +54,7 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
         // 3) Expose context to downstream layers
         ResolvedKey rk = resolved.get();
         request.setAttribute("apiKeyId", rk.id());            // UUID of key
-        request.setAttribute("churchId", rk.churchId());      // String church/tenant id
+        request.setAttribute("churchId", rk.orgId());      // String church/tenant id
         request.setAttribute("resolvedKey", rk);              // the whole DTO if useful
 
         // (Optional) If ApiKeyService throttles lastUsedAt updates internally,

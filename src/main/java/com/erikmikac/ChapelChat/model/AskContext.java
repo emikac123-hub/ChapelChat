@@ -8,7 +8,7 @@ package com.erikmikac.ChapelChat.model;
  * injection.
  *
  * @param askRequest      The original request from the user.
- * @param churchId        The ID of the church this request is for.
+ * @param orgId           The ID of the church this request is for.
  * @param ip              The IP address of the client making the request.
  * @param userAgent       The user agent of the client.
  * @param prompt          The system prompt being used to generate the response.
@@ -16,14 +16,16 @@ package com.erikmikac.ChapelChat.model;
  *                        request.
  * @param requestId       A unique identifier for tracking this request through
  *                        the logs.
+ *  * @param orgType       The type of orgnzation: Ministry or SMB.
  */
 public record AskContext(
-    AskRequest askRequest,
-    String churchId,
-    String ip,
-    String userAgent,
-    String prompt,
-    String profileChecksum,
-    String requestId // for log tracability
-) {
+        AskRequest askRequest,
+        String orgId,
+        String ip,
+        String userAgent,
+        String prompt,
+        String profileChecksum,
+        String requestId, // for log tracability
+        String orgType,
+        String tenantId) {
 }

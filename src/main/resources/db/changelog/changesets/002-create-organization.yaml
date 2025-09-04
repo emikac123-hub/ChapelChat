@@ -1,0 +1,277 @@
+# db/changelog/002-organization.yml
+databaseChangeLog:
+  - changeSet:
+      id: 002-organization-create
+      author: erik
+      changes:
+        - createTable:
+            tableName: organization
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(128)           # matches your @Id String (e.g., "grace-orthodox")
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: allowed_origin
+                  type: VARCHAR(255)           # nullable by default
+        - createIndex:
+            tableName: organization
+            indexName: idx_organization_name
+            columns:
+              - column:
+                  name: name
+      rollback:
+        - dropTable:
+            tableName: organization
+            cascadeConstraints: true
+
+  # FK: api_keys.org_id -> organization.id  (your api_keys already has org_id)
+  - changeSet:
+      id: 002-organization-fk-api-keys
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: api_keys
+        - columnExists:
+            tableName: api_keys
+            columnName: org_id
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_api_keys_organization
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: api_keys
+            baseColumnNames: org_id
+            referencedTableName: organization
+            referencedColumnNames: id
+            constraintName: fk_api_keys_organization
+            onDelete: CASCADE
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: api_keys
+            constraintName: fk_api_keys_organization
+
+  # OPTIONAL FK: app_user.org_id -> organization.id  (only applies if the column exists)
+  - changeSet:
+      id: 002-organization-fk-app-user
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: app_user
+        - columnExists:
+            tableName: app_user
+            columnName: org_id
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_app_user_organization
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: app_user
+            baseColumnNames: org_id
+            referencedTableName: organization
+            referencedColumnNames: id
+            constraintName: fk_app_user_organization
+            onDelete: SET NULL         # change to CASCADE if you prefer
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: app_user
+            constraintName: fk_app_user_organization
+
+  # -------------------------------
+  # NEW: Tenants + tenant_id wiring
+  # -------------------------------
+
+  # Create tenants table (id may be VARCHAR/UUID; adjust as needed)
+  - changeSet:
+      id: 002-tenants-create
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: tenants
+      changes:
+        - createTable:
+            tableName: tenants
+            columns:
+              - column:
+                  name: id
+                  type: VARCHAR(64)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: org_id
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: tenants
+            baseColumnNames: org_id
+            referencedTableName: organization
+            referencedColumnNames: id
+            constraintName: fk_tenants_organization
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - addUniqueConstraint:
+            tableName: tenants
+            columnNames: org_id, slug
+            constraintName: uq_tenants_org_slug
+        - createIndex:
+            tableName: tenants
+            indexName: idx_tenants_org
+            columns:
+              - column:
+                  name: org_id
+      rollback:
+        - dropTable:
+            tableName: tenants
+            cascadeConstraints: true
+
+  # Add tenant_id to api_keys (nullable now), then FK to tenants.id
+  - changeSet:
+      id: 002-api-keys-tenantid-add
+      author: erik
+      preConditions:
+        - onFail: CONTINUE
+        - tableExists:
+            tableName: api_keys
+        - not:
+            - columnExists:
+                tableName: api_keys
+                columnName: tenant_id
+      changes:
+        - addColumn:
+            tableName: api_keys
+            columns:
+              - column:
+                  name: tenant_id
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: api_keys
+            indexName: idx_api_keys_tenant
+            columns:
+              - column:
+                  name: tenant_id
+      rollback:
+        - dropIndex:
+            tableName: api_keys
+            indexName: idx_api_keys_tenant
+        - dropColumn:
+            tableName: api_keys
+            columnName: tenant_id
+
+  - changeSet:
+      id: 002-api-keys-tenantid-fk
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: api_keys
+        - columnExists:
+            tableName: api_keys
+            columnName: tenant_id
+        - tableExists:
+            tableName: tenants
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_api_keys_tenant
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: api_keys
+            baseColumnNames: tenant_id
+            referencedTableName: tenants
+            referencedColumnNames: id
+            constraintName: fk_api_keys_tenant
+            onDelete: SET NULL
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: api_keys
+            constraintName: fk_api_keys_tenant
+
+  # OPTIONAL: app_user.tenant_id -> tenants.id (only if the column exists)
+  - changeSet:
+      id: 002-app-user-tenantid-fk
+      author: erik
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: app_user
+        - columnExists:
+            tableName: app_user
+            columnName: tenant_id
+        - tableExists:
+            tableName: tenants
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_app_user_tenant
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: app_user
+            baseColumnNames: tenant_id
+            referencedTableName: tenants
+            referencedColumnNames: id
+            constraintName: fk_app_user_tenant
+            onDelete: SET NULL
+            onUpdate: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: app_user
+            constraintName: fk_app_user_tenant
+
+  # (Optional) Seed a 'default' tenant for each org (id/slug='default') if none exist
+  - changeSet:
+      id: 002-tenants-seed-default
+      author: erik
+      preConditions:
+        - onFail: CONTINUE
+        - tableExists: { tableName: tenants }
+        - tableExists: { tableName: organization }
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              INSERT INTO tenants (id, org_id, slug, name)
+              SELECT
+                md5(o.id || ':default') AS id,   -- 32-char hex, unique per org, fits VARCHAR(64)
+                o.id                 AS org_id,
+                'default'            AS slug,
+                'Default'            AS name
+              FROM organization o
+              WHERE NOT EXISTS (
+                SELECT 1 FROM tenants t
+                WHERE t.org_id = o.id AND t.slug = 'default'
+              );
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM tenants
+              WHERE slug = 'default';

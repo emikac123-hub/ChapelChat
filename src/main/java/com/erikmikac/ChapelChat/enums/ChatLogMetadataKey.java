@@ -11,7 +11,8 @@ public enum ChatLogMetadataKey {
     OPENAI_MODEL("model"),
     TEMPERATURE("temperature"),
     USER_AGENT("user-agent"),
-    PROFILE_CHECKSUM("profileChecksum");
+    PROFILE_CHECKSUM("profileChecksum"),
+    ORG_TYPE("organizationType");
 
     private final String key;
 

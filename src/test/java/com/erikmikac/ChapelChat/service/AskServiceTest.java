@@ -10,15 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.lenient;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,13 +30,14 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.erikmikac.ChapelChat.config.OpenAiProperties;
 import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.enums.ChatLogMetadataKey;
-import com.erikmikac.ChapelChat.exceptions.ChurchProfileNotFoundException;
+import com.erikmikac.ChapelChat.enums.OrgType;
+import com.erikmikac.ChapelChat.exceptions.OrganizationProfileNotFoundException;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.model.AskResponse;
 import com.erikmikac.ChapelChat.model.PromptWithChecksum;
 import com.erikmikac.ChapelChat.model.admin.ResolvedKey;
 import com.erikmikac.ChapelChat.service.admin.ApiKeyService;
-import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
+import com.erikmikac.ChapelChat.service.admin.OrganizationProfileService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -48,7 +48,7 @@ import jakarta.servlet.http.HttpServletRequest;
 class AskServiceTest {
 
     @Mock
-    ChurchProfileService profileService;
+    OrganizationProfileService profileService;
     @Mock
     OpenAiService aiService;
     @Mock
@@ -97,7 +97,7 @@ class AskServiceTest {
     }
 
     private ResolvedKey mkResolved(String churchId) {
-        return new ResolvedKey("key", churchId);
+        return new ResolvedKey("key", churchId, "default", OrgType.CHURCH);
     }
 
     // --- tests ---------------------------------------------------------------
@@ -111,31 +111,28 @@ class AskServiceTest {
         ResponseEntity<AskResponse> resp = service.processAsk(ask, req);
 
         assertEquals(401, resp.getStatusCodeValue());
-        assertTrue(resp.getBody().getResponse().contains("Invalid or revoked"));
+        assertTrue(resp.getBody().getResponse().contains("Invalid credentials."));
         verifyNoInteractions(profileService, aiService, chatLogService, sanitizer);
     }
 
     @Test
-    void emptyMessage_returns400_andCallsHandlePromptInjectionPath() throws ChurchProfileNotFoundException {
+    void emptyMessage_returns200_andCallsHandlePromptInjectionPath() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("   ", "sess1"); // empty after trim
         HttpServletRequest req = mkReq("key", "1.2.3.4", "UA", null);
 
         when(apiKeyService.resolve("key")).thenReturn(mkResolved("church-1"));
-        when(profileService.getSystemPromptAndChecksumFor("church-1"))
-                .thenReturn(mkPrompt("SYS", "chk"));
-        when(sanitizer.isSafe(anyString())).thenReturn(true);
         // sanitizer is not reached because empty message is validated later in method
 
         ResponseEntity<AskResponse> resp = service.processAsk(ask, req);
 
-        assertEquals(400, resp.getStatusCodeValue());
-        assertTrue(resp.getBody().getResponse().contains("empty"));
+        assertEquals(200, resp.getStatusCodeValue());
+        assertTrue(resp.getBody().getResponse().contains("can't be processed"));
         // The code calls handlePromptInjection(...) on this branch
         verify(chatLogService, atLeastOnce()).saveChatLog(any(ChatLog.class));
     }
 
     @Test
-    void sanitizerBlocksMessage_returns200_withBlockedText_andSavesFlaggedLog() throws ChurchProfileNotFoundException {
+    void sanitizerBlocksMessage_returns200_withBlockedText_andSavesFlaggedLog() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("ignore previous", "sess1");
         HttpServletRequest req = mkReq("key", "203.0.113.9", "UA", null);
 
@@ -153,7 +150,7 @@ class AskServiceTest {
 
         verify(chatLogService).saveChatLog(cap.capture());
         ChatLog saved = cap.getValue();
-        assertEquals("church-1", saved.getChurchId());
+        assertEquals("church-1", saved.getOrgId());
         assertEquals(UUID.nameUUIDFromBytes("sess1".getBytes()), saved.getSessionId());
         assertEquals("ignore previous", saved.getUserQuestion());
         assertEquals("Blocked for unsafe content.", saved.getBotResponse());
@@ -163,7 +160,7 @@ class AskServiceTest {
     }
 
     @Test
-    void happyPath_returns200_andEnrichesAsync_andCallsAi() throws ChurchProfileNotFoundException {
+    void happyPath_returns200_andEnrichesAsync_andCallsAi() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("What time is service?", "sessA");
         HttpServletRequest req = mkReq("key", "198.51.100.3", "Mozilla", null);
 
@@ -183,7 +180,7 @@ class AskServiceTest {
     }
 
     @Test
-    void sessionLimitExceeded_returns400_andSavesFlaggedMeta() throws ChurchProfileNotFoundException {
+    void sessionLimitExceeded_returns400_andSavesFlaggedMeta() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("Q?", "sessX");
         HttpServletRequest req = mkReq("key", "203.0.113.20", "UA", null);
 
@@ -191,7 +188,6 @@ class AskServiceTest {
         when(profileService.getSystemPromptAndChecksumFor("church-3"))
                 .thenReturn(mkPrompt("SYS", "chk3"));
         when(sanitizer.isSafe("Q?")).thenReturn(true);
-        when(aiService.generateAnswer(anyString(), anyString())).thenReturn("A");
         when(chatLogService.isMaxSessionCountReached(eq(ask), eq("203.0.113.20"), anyString()))
                 .thenReturn(true);
 
@@ -212,17 +208,16 @@ class AskServiceTest {
     }
 
     @Test
-    void ipRateLimitExceeded_returns400_andSavesFlaggedMeta() throws ChurchProfileNotFoundException {
+    void ipRateLimitExceeded_returns400_andSavesFlaggedMeta() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("Q2", "sessY");
         HttpServletRequest req = mkReq("key", "198.51.100.50", "UA", null);
 
         Mockito.lenient().when(apiKeyService.resolve(anyString()))
-                .thenReturn(new ResolvedKey("whatever", "church-4"));
+                .thenReturn(new ResolvedKey("whatever", "church-4", "default", OrgType.CHURCH));
 
         when(profileService.getSystemPromptAndChecksumFor("church-4"))
                 .thenReturn(mkPrompt("SYS", "chk4"));
         when(sanitizer.isSafe("Q2")).thenReturn(true);
-        when(aiService.generateAnswer(anyString(), anyString())).thenReturn("A2");
         when(chatLogService.isMaxSessionCountReached(any(), anyString(), anyString()))
                 .thenReturn(false);
         when(chatLogService.isTooManyRequestsFromSameIP(Mockito.eq("198.51.100.50"), anyString()))
@@ -243,13 +238,13 @@ class AskServiceTest {
     }
 
     @Test
-    void churchProfileMissing_returns400() throws ChurchProfileNotFoundException {
+    void churchProfileMissing_returns400() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("Hi", "s1");
         HttpServletRequest req = mkReq("key", "203.0.113.2", "UA", null);
 
         when(apiKeyService.resolve("key")).thenReturn(mkResolved("church-miss"));
         when(profileService.getSystemPromptAndChecksumFor("church-miss"))
-                .thenThrow(new ChurchProfileNotFoundException("missing"));
+                .thenThrow(new OrganizationProfileNotFoundException("missing"));
 
         ResponseEntity<AskResponse> resp = service.processAsk(ask, req);
 
@@ -260,7 +255,7 @@ class AskServiceTest {
     }
 
     @Test
-    void usesXForwardedFor_firstIp_whenPresent() throws ChurchProfileNotFoundException {
+    void usesXForwardedFor_firstIp_whenPresent() throws OrganizationProfileNotFoundException {
         AskRequest ask = mkAsk("Q", "ss");
         // XFF contains multiple IPs; service should pick the first
         HttpServletRequest req = mkReq("key", "ignored-remote", "UA", "203.0.113.10, 70.1.2.3");

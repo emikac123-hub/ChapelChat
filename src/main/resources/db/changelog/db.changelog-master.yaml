@@ -1,10 +1,8 @@
 databaseChangeLog:
-  - logicalFilePath: db/changelog/db.changelog-master.yaml
-
   - include:
       file: db/changelog/changesets/001-core.yaml
   - include:
-      file: db/changelog/changesets/002-create-church.yaml
+      file: db/changelog/changesets/002-create-organization.yaml
   - include:
       file: db/changelog/changesets/002-app-user.yaml
   - include:

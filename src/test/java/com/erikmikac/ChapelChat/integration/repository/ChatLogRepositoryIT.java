@@ -2,17 +2,11 @@ package com.erikmikac.ChapelChat.integration.repository;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import com.erikmikac.ChapelChat.entity.ChatLog;
-import com.erikmikac.ChapelChat.entity.Church;
-import com.erikmikac.ChapelChat.model.FlagResponse;
+import com.erikmikac.ChapelChat.entity.Organization;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
 import com.erikmikac.ChapelChat.util.ChatLogMetadataBuilder;
 
@@ -42,7 +35,7 @@ class ChatLogRepositoryIT extends BaseJpaIT {
     @BeforeEach
     void seed() {
         // Seed user 1
-        Church c = new Church();
+        Organization c = new Organization();
         c.setId("hope-baptist");
         c.setName("Hope Baptist");
         c.setAllowedOrigin("http://localhost");
@@ -54,7 +47,7 @@ class ChatLogRepositoryIT extends BaseJpaIT {
         chatLog = ChatLog.builder()
                 .botResponse("Good idea!")
                 .userQuestion("I'd like to start a church.")
-                .churchId("hope-baptist")
+                .orgId("hope-baptist")
                 .sessionId(sessionId)
                 .metadata(meta)
                 .sourceIp(sourceIp)
@@ -81,7 +74,7 @@ class ChatLogRepositoryIT extends BaseJpaIT {
         chatLog = ChatLog.builder()
                 .botResponse("Good idea!")
                 .userQuestion("I'd like to start a church.")
-                .churchId("hope-baptist")
+                .orgId("hope-baptist")
                 .sessionId(someOtherSessionId)
                 .metadata(meta)
                 .sourceIp(sourceIp)
@@ -101,7 +94,7 @@ class ChatLogRepositoryIT extends BaseJpaIT {
         flaggedChatLog = ChatLog.builder()
                 .botResponse("Good idea!")
                 .userQuestion("I'd like to start a small business, darn it.")
-                .churchId("hope-baptist")
+                .orgId("hope-baptist")
                 .sessionId(someOtherSessionId)
                 .metadata(flaggedMeta)
                 .sourceIp(sourceIp)

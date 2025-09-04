@@ -4,33 +4,33 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="n2" value="&lt;b&gt;api_keys&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;api_key: VARCHAR(255) NOT NULL&lt;br/&gt;church_id: VARCHAR(255) NOT NULL&lt;br/&gt;is_active: boolean NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
+        <mxCell id="n2" value="&lt;b&gt;api_keys&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;api_key: VARCHAR(255) NOT NULL&lt;br/&gt;org_id: VARCHAR(255) NOT NULL&lt;br/&gt;is_active: boolean NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="50" y="20" width="300" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="n3" value="&lt;b&gt;app_user&lt;/b&gt;&lt;br/&gt;id: BIGINT NOT NULL&lt;br/&gt;username: VARCHAR(255) NOT NULL&lt;br/&gt;password: VARCHAR(255) NOT NULL&lt;br/&gt;role: VARCHAR(50) NOT NULL&lt;br/&gt;church_id: VARCHAR(255) NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
+        <mxCell id="n3" value="&lt;b&gt;app_user&lt;/b&gt;&lt;br/&gt;id: BIGINT NOT NULL&lt;br/&gt;username: VARCHAR(255) NOT NULL&lt;br/&gt;password: VARCHAR(255) NOT NULL&lt;br/&gt;role: VARCHAR(50) NOT NULL&lt;br/&gt;org_id: VARCHAR(255) NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="540" y="20" width="300" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="n4" value="&lt;b&gt;chat_log_metrics&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;chat_log_id: UUID NOT NULL&lt;br/&gt;church_id: VARCHAR(255) NOT NULL&lt;br/&gt;timestamp: TIMESTAMP WITH TIME ZONE NOT NULL&lt;br/&gt;request_tokens: INT&lt;br/&gt;response_tokens: INT&lt;br/&gt;total_tokens: INT&lt;br/&gt;latency_ms: INT&lt;br/&gt;model: VARCHAR(100)&lt;br/&gt;cost_usd: DECIMAL(10,5)&lt;br/&gt;flagged: BOOLEAN" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
+        <mxCell id="n4" value="&lt;b&gt;chat_log_metrics&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;chat_log_id: UUID NOT NULL&lt;br/&gt;org_id: VARCHAR(255) NOT NULL&lt;br/&gt;timestamp: TIMESTAMP WITH TIME ZONE NOT NULL&lt;br/&gt;request_tokens: INT&lt;br/&gt;response_tokens: INT&lt;br/&gt;total_tokens: INT&lt;br/&gt;latency_ms: INT&lt;br/&gt;model: VARCHAR(100)&lt;br/&gt;cost_usd: DECIMAL(10,5)&lt;br/&gt;flagged: BOOLEAN" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="1090" y="240" width="300" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="n5" value="&lt;b&gt;chat_logs&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;church_id: VARCHAR(255) NOT NULL&lt;br/&gt;session_id: UUID&lt;br/&gt;user_question: TEXT NOT NULL&lt;br/&gt;bot_response: TEXT NOT NULL&lt;br/&gt;timestamp: TIMESTAMPTZ&lt;br/&gt;source_ip: VARCHAR(45)&lt;br/&gt;user_agent: TEXT&lt;br/&gt;metadata: JSONB" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
+        <mxCell id="n5" value="&lt;b&gt;chat_logs&lt;/b&gt;&lt;br/&gt;id: UUID NOT NULL&lt;br/&gt;org_id: VARCHAR(255) NOT NULL&lt;br/&gt;session_id: UUID&lt;br/&gt;user_question: TEXT NOT NULL&lt;br/&gt;bot_response: TEXT NOT NULL&lt;br/&gt;timestamp: TIMESTAMPTZ&lt;br/&gt;source_ip: VARCHAR(45)&lt;br/&gt;user_agent: TEXT&lt;br/&gt;metadata: JSONB" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="540" y="250" width="300" height="180" as="geometry" />
         </mxCell>
         <mxCell id="n6" value="&lt;b&gt;church&lt;/b&gt;&lt;br/&gt;id: VARCHAR(255) NOT NULL&lt;br/&gt;name: VARCHAR(255) NOT NULL&lt;br/&gt;allowed_origin: VARCHAR(255)&lt;br/&gt;contact_email: VARCHAR(255)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="40" y="480" width="300" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="n7" value="&lt;b&gt;church_profile&lt;/b&gt;&lt;br/&gt;id: uuid NOT NULL&lt;br/&gt;slug: text NOT NULL&lt;br/&gt;profile: jsonb NOT NULL&lt;br/&gt;is_published: boolean NOT NULL&lt;br/&gt;updated_by: text&lt;br/&gt;church_id: VARCHAR(255) NOT NULL&lt;br/&gt;updated_at: timestamptz NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
+        <mxCell id="n7" value="&lt;b&gt;church_profile&lt;/b&gt;&lt;br/&gt;id: uuid NOT NULL&lt;br/&gt;slug: text NOT NULL&lt;br/&gt;profile: jsonb NOT NULL&lt;br/&gt;is_published: boolean NOT NULL&lt;br/&gt;updated_by: text&lt;br/&gt;org_id: VARCHAR(255) NOT NULL&lt;br/&gt;updated_at: timestamptz NOT NULL" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;align=left;spacingLeft=8;strokeColor=#5B6B7F;fillColor=#EEF2F7;" parent="1" vertex="1">
           <mxGeometry x="540" y="480" width="300" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="e1" value="fk_api_church (church_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n2" target="n6" edge="1">
+        <mxCell id="e1" value="fk_api_church (org_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n2" target="n6" edge="1">
           <mxGeometry x="-0.1731" y="195" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" value="fk_user_church (church_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n3" target="n6" edge="1">
+        <mxCell id="e2" value="fk_user_church (org_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n3" target="n6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e3" value="fk_chat_log_church_id (church_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n5" target="n6" edge="1">
+        <mxCell id="e3" value="fk_chat_log_org_id (org_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n5" target="n6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e4" value="fk_chat_log_metrics_chat_log (chat_log_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n4" target="n5" edge="1">
@@ -39,7 +39,7 @@
         <mxCell id="e5" value="fk_chat_log_metrics_chat_log (chat_log_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n4" target="n5" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6" value="fk_church_church_profile (church_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n7" target="n6" edge="1">
+        <mxCell id="e6" value="fk_church_church_profile (org_id → id)" style="endArrow=block;endFill=1;html=1;strokeColor=#5B6B7F;" parent="1" source="n7" target="n6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

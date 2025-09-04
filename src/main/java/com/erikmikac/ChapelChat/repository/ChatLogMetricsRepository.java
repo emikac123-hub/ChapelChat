@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.erikmikac.ChapelChat.entity.ChatLogMetrics;
 
 public interface ChatLogMetricsRepository extends JpaRepository<ChatLogMetrics, UUID> {
-    List<ChatLogMetrics> findByChurchIdAndTimestampBetween(String churchId, Instant start, Instant end);
+    List<ChatLogMetrics> findByOrgIdAndTimestampBetween(String orgId, Instant start, Instant end);
 }

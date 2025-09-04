@@ -14,23 +14,23 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.entity.ChatLogMetrics;
-import com.erikmikac.ChapelChat.entity.Church;
+import com.erikmikac.ChapelChat.entity.Organization;
 import com.erikmikac.ChapelChat.repository.ChatLogMetricsRepository;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
-import com.erikmikac.ChapelChat.repository.ChurchRepository;
+import com.erikmikac.ChapelChat.repository.OrganizationRepository;
 
 @DataJpaTest
 class ForeignKeysIntegrityIT extends BaseJpaIT {
 
-  @Autowired ChurchRepository churchRepo;
+  @Autowired OrganizationRepository churchRepo;
   @Autowired ChatLogRepository chatLogRepo;
   @Autowired ChatLogMetricsRepository metricsRepo;
 
-  // 1) chat_logs.church_id must reference church(id)
+  // 1) chat_logs.org_id must reference church(id)
   @Test
   void insertingChatLog_withoutExistingChurch_failsFK() {
     ChatLog log = ChatLog.builder()
-        .churchId("missing-church")          // no parent row
+        .orgId("missing-church")          // no parent row
         .userQuestion("Q")
         .botResponse("A")
         .timestamp(Instant.now())
@@ -51,14 +51,14 @@ class ForeignKeysIntegrityIT extends BaseJpaIT {
   @Test
   void insertingMetrics_withNonexistentChatLogId_failsFK() {
     // Seed required church + valid chat_log (to show contrast later)
-    Church church = new Church();
+    Organization church = new Organization();
     church.setId("hope-baptist");
     church.setName("Hope Baptist");
     churchRepo.saveAndFlush(church);
 
     // Try metrics pointing to a random (non-existent) chat_log_id
     ChatLogMetrics badMetrics = ChatLogMetrics.builder()
-        .churchId("hope-baptist")
+        .orgId("hope-baptist")
         .chatLogId(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"))
         .timestamp(Instant.now())
         .latencyMs(100)

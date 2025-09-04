@@ -103,6 +103,12 @@ public class ChatLogMetadataBuilder {
         return this;
     }
 
+        public ChatLogMetadataBuilder withOrgType(String orgType) {
+        if (orgType != null && !orgType.isBlank()) {
+            metadata.put(ChatLogMetadataKey.ORG_TYPE.key(), orgType);
+        }
+        return this;
+    }
     /**
      * Constructs the final metadata map.
      *

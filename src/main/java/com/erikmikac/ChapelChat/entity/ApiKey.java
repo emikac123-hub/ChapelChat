@@ -22,7 +22,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "api_keys", uniqueConstraints = @UniqueConstraint(name = "uq_api_keys_token_hash", columnNames = "token_hash"), indexes = {
-        @Index(name = "idx_api_keys_church_revoked", columnList = "church_id, revoked_at"),
+        @Index(name = "idx_api_keys_church_revoked", columnList = "org_id, revoked_at"),
         @Index(name = "idx_api_keys_last_used_at", columnList = "last_used_at")
 })
 @Getter
@@ -38,9 +38,9 @@ public class ApiKey {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "church_id", nullable = false) // FK → church.id
+    @JoinColumn(name = "org_id", nullable = false) // FK → org.id
     @ToString.Exclude
-    private Church church;
+    private Organization organization;
 
     @Column(name = "token_hash", nullable = false, length = 255)
     private String tokenHash;
@@ -73,18 +73,18 @@ public class ApiKey {
 
     // ----- Convenience (not mapped) -----
     @Transient
-    public String getChurchId() {
-        return church != null ? church.getId() : null;
+    public String getOrganizationId() {
+        return organization != null ? organization.getId() : null;
     }
 
     /** Allow setting the FK by id without loading Church from DB. */
     public void setChurchId(String churchId) {
         if (churchId == null) {
-            this.church = null;
+            this.organization = null;
             return;
         }
-        Church stub = new Church();
+        Organization stub = new Organization();
         stub.setId(churchId);
-        this.church = stub;
+        this.organization = stub;
     }
 }

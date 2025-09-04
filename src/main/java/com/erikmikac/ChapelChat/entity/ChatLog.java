@@ -28,8 +28,8 @@ public class ChatLog {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "church_id", nullable = false)
-    private String churchId;
+    @Column(name = "org_id", nullable = false)
+    private String orgId;
 
     @Column(name = "session_id")
     private UUID sessionId;
@@ -49,6 +49,9 @@ public class ChatLog {
     @Column(name = "user_agent", columnDefinition = "TEXT")
     private String userAgent;
 
+    @Column(name = "tenant_id")
+    private String tenantId;
+
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> metadata;
 
@@ -56,9 +59,9 @@ public class ChatLog {
     public ChatLog() {
     }
 
-    public ChatLog(String churchId, UUID sessionId, String userQuestion, String botResponse,
+    public ChatLog(String orgId, UUID sessionId, String userQuestion, String botResponse,
             String sourceIp, String userAgent, Map<String, Object> metadata) {
-        this.churchId = churchId;
+        this.orgId = orgId;
         this.sessionId = sessionId;
         this.userQuestion = userQuestion;
         this.botResponse = botResponse;

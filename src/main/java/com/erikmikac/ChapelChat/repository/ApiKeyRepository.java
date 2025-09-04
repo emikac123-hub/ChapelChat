@@ -8,6 +8,6 @@ public interface ApiKeyRepository
     extends org.springframework.data.jpa.repository.JpaRepository<ApiKey, java.util.UUID> {
   java.util.Optional<ApiKey> findByTokenHashAndRevokedAtIsNull(String tokenHash);
 
-  List<ApiKey> findByChurch_IdAndRevokedAtIsNullOrderByCreatedAtDesc(String churchId);
+  List<ApiKey> findByOrganization_IdAndRevokedAtIsNullOrderByCreatedAtDesc(String orgId);
 
 }

@@ -31,8 +31,8 @@ public class ChatLogMetrics {
     @Column(name = "chat_log_id", nullable = false)
     private UUID chatLogId;
 
-    @Column(name = "church_id", nullable = false)
-    private String churchId;
+    @Column(name = "org_id", nullable = false)
+    private String orgId;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

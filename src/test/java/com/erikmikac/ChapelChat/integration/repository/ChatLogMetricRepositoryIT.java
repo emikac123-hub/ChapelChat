@@ -1,24 +1,22 @@
 package com.erikmikac.ChapelChat.integration.repository;
 
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.entity.ChatLogMetrics;
-import com.erikmikac.ChapelChat.entity.Church;
+import com.erikmikac.ChapelChat.entity.Organization;
 import com.erikmikac.ChapelChat.repository.ChatLogMetricsRepository;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
-import com.erikmikac.ChapelChat.repository.ChurchRepository;
+import com.erikmikac.ChapelChat.repository.OrganizationRepository;
 
 @DataJpaTest
 class ChatLogMetricRepositoryIT extends BaseJpaIT {
@@ -28,9 +26,9 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
     @Autowired
     private ChatLogRepository chatLogRepo;
     @Autowired
-    private ChurchRepository churchRepo; // or use TestEntityManager/JdbcTemplate to insert church
+    private OrganizationRepository churchRepo; // or use TestEntityManager/JdbcTemplate to insert church
 
-    private final String churchId = "hope-baptist";
+    private final String orgId = "hope-baptist";
     private Instant now;
     private Instant yesterday;
     private Instant twoDaysAgo;
@@ -41,9 +39,9 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
         yesterday = now.minusSeconds(24 * 60 * 60);
         twoDaysAgo = now.minusSeconds(2 * 24 * 60 * 60);
 
-        // 1) Seed parent church (satisfy FK: chat_logs.church_id -> church.id)
-        Church church = new Church();
-        church.setId(churchId);
+        // 1) Seed parent church (satisfy FK: chat_logs.org_id -> church.id)
+        Organization church = new Organization();
+        church.setId(orgId);
         church.setName("Hope Baptist");
         church.setAllowedOrigin("http://localhost");
         churchRepo.save(church);
@@ -51,7 +49,7 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
         // 2) Seed chat log (satisfy FK for metrics: chat_log_metrics.chat_log_id ->
         // chat_logs.id)
         ChatLog chatlog = ChatLog.builder()
-                .churchId(churchId)
+                .orgId(orgId)
                 .sessionId(UUID.randomUUID())
                 .userQuestion("Should I go to church?")
                 .botResponse("Good idea!")
@@ -63,7 +61,7 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
         // 3) Seed metrics: one inside window, one outside
         ChatLogMetrics m1 = ChatLogMetrics.builder()
                 .chatLogId(chatLogId)
-                .churchId(churchId)
+                .orgId(orgId)
                 .timestamp(yesterday) // inside [from, to]
                 .latencyMs(120)
                 .requestTokens(100)
@@ -76,7 +74,7 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
 
         ChatLogMetrics m2 = ChatLogMetrics.builder()
                 .chatLogId(chatLogId)
-                .churchId(churchId)
+                .orgId(orgId)
                 .timestamp(twoDaysAgo) // outside [from, to]
                 .latencyMs(250)
                 .requestTokens(50)
@@ -92,14 +90,14 @@ class ChatLogMetricRepositoryIT extends BaseJpaIT {
     }
 
     @Test
-    void findByChurchIdAndTimestampBetween_returnsOnlyWithinRange() {
+    void findByOrgIdAndTimestampBetween_returnsOnlyWithinRange() {
         Instant from = yesterday.minusSeconds(60);
         Instant to = now.plusSeconds(60);
 
-        var results = metricsRepo.findByChurchIdAndTimestampBetween(churchId, from, to);
+        var results = metricsRepo.findByOrgIdAndTimestampBetween(orgId, from, to);
 
         assertThat(results).hasSize(2);
-        assertThat(results.get(0).getChurchId()).isEqualTo(churchId);
+        assertThat(results.get(0).getOrgId()).isEqualTo(orgId);
         assertThat(results.get(0).getTimestamp()).isBetween(from, to);
     }
 }

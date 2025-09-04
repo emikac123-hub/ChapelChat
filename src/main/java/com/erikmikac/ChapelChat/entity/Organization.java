@@ -22,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true) // keep it safe
-public class Church {
+public class Organization {
 
     @Id
     @EqualsAndHashCode.Include
@@ -32,11 +32,11 @@ public class Church {
     private String name;
     private String allowedOrigin;
 
-    @OneToMany(mappedBy = "church")
+    @OneToMany(mappedBy = "organization")
     @ToString.Exclude
     private Set<ApiKey> apiKeys = new HashSet<>();
 
-    // Church.java
-    @OneToMany(mappedBy = "church")
+ 
+    @OneToMany(mappedBy = "organization")
     private Set<AppUser> users = new HashSet<>();
 }

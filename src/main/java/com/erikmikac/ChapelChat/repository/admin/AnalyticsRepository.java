@@ -22,7 +22,7 @@ public class AnalyticsRepository {
         SELECT m.latency_ms, m.total_tokens, m.cost_usd, m.flagged, m."timestamp", l.session_id
         FROM chat_log_metrics m
         JOIN chat_logs l ON l.id = m.chat_log_id
-        WHERE l.church_id = :churchId AND m."timestamp" >= :from AND m."timestamp" < :to
+        WHERE l.org_id = :churchId AND m."timestamp" >= :from AND m."timestamp" < :to
       )
       SELECT
         COUNT(*) AS conversations,

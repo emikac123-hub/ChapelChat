@@ -2,7 +2,8 @@ package com.erikmikac.ChapelChat.tenant;
 
 import java.util.Objects;
 
-public final class TenantContext {
+public final class TenantContext_New {
+
     // Thread-local container for all per-request tenant info
     private static final ThreadLocal<Context> CTX = new ThreadLocal<>();
 
@@ -34,7 +35,6 @@ public final class TenantContext {
         }
     }
 
-    @Deprecated
     public enum OrgType { CHURCH, SMB, NONPROFIT /* extend as needed */ }
 
     // ----- Core API -----
@@ -53,4 +53,5 @@ public final class TenantContext {
         set(new Context(id, /*tenantId*/ null, OrgType.CHURCH));
     }
     @Deprecated public static String getChurchId() { return getOrgId(); }
+
 }

@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.erikmikac.ChapelChat.enums.Roles;
-import com.erikmikac.ChapelChat.tenant.HasChurchId;
+import com.erikmikac.ChapelChat.tenant.HasOrgIdentity;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -31,7 +31,7 @@ import lombok.Setter;
 @Table(name = "app_user")
 @Getter @Setter
 @NoArgsConstructor
-public class AppUser implements HasChurchId, UserDetails {
+public class AppUser implements HasOrgIdentity, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,8 +52,8 @@ public class AppUser implements HasChurchId, UserDetails {
     private boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "church_id")                  // add this column via Liquibase (below)
-    private Church church;
+    @JoinColumn(name = "org_id")                  // add this column via Liquibase (below)
+    private Organization organization;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "app_user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -61,7 +61,7 @@ public class AppUser implements HasChurchId, UserDetails {
     @Column(name = "role", nullable = false, length = 20)
     private Set<Roles> roles = new java.util.HashSet<>();
 
-    @Override public String getChurchId() { return church != null ? church.getId() : null; }
+    @Override public String getOrganizationId() { return organization != null ? organization.getId() : null; }
 
     // --- UserDetails bridge ---
     @Override public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -79,4 +79,22 @@ public class AppUser implements HasChurchId, UserDetails {
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return active; }
+
+    @Override
+    public String getOrgId() {
+        // TODO Auto-generated method stub
+        return this.organization.getId();
+    }
+
+    @Override
+    public String getTenantId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOrgType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

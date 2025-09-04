@@ -19,7 +19,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: display_name
+                  name: organization
                   type: VARCHAR(120)
                   constraints:
                     nullable: false
@@ -33,8 +33,11 @@ databaseChangeLog:
                   type: BOOLEAN
                   defaultValueBoolean: true
               - column:
-                  name: church_id
-                  type: VARCHAR(128)         # nullable; FK added below when church table exists
+                  name: org_id
+                  type: VARCHAR(128)
+              - column:
+                  name: display_name
+                  type: VARCHAR(128)          # nullable; FK added below when organization table exists
               - column:
                   name: created_at
                   type: TIMESTAMP WITH TIME ZONE
@@ -50,35 +53,35 @@ databaseChangeLog:
         - dropTable:
             tableName: app_user
 
-  # Add FK to church.id once both tables are present
+  # Add FK to organization.id once both tables are present
   - changeSet:
-      id: 0002-app-user-fk-church
+      id: 0002-app-user-fk-organization
       author: erik
       preConditions:
         - onFail: MARK_RAN
         - tableExists:
             tableName: app_user
         - tableExists:
-            tableName: church
+            tableName: organization
         - columnExists:
             tableName: app_user
-            columnName: church_id
+            columnName: org_id
         - not:
             - foreignKeyConstraintExists:
-                foreignKeyName: fk_app_user_church
+                foreignKeyName: fk_app_user_organization
       changes:
         - addForeignKeyConstraint:
             baseTableName: app_user
-            baseColumnNames: church_id
-            referencedTableName: church
+            baseColumnNames: org_id
+            referencedTableName: organization
             referencedColumnNames: id
-            constraintName: fk_app_user_church
+            constraintName: fk_app_user_organization
             onDelete: SET NULL
             onUpdate: CASCADE
       rollback:
         - dropForeignKeyConstraint:
             baseTableName: app_user
-            constraintName: fk_app_user_church
+            constraintName: fk_app_user_organization
 
   # Optional trigger to auto-update updated_at (Postgres)
   - changeSet:

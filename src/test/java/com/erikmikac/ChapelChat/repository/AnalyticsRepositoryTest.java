@@ -94,7 +94,7 @@ class AnalyticsRepositoryTest {
                     argThat(sql -> sql.contains("WITH base AS")
                             && sql.contains("FROM chat_log_metrics m")
                             && sql.contains("JOIN chat_logs l ON l.id = m.chat_log_id")
-                            && sql.contains("WHERE l.church_id = :churchId")
+                            && sql.contains("WHERE l.org_id = :churchId")
                             && sql.contains("COUNT(*) AS conversations")),
                     any(MapSqlParameterSource.class),
                     any(RowMapper.class)

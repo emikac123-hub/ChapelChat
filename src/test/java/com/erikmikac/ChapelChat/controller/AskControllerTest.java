@@ -5,36 +5,44 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Map;
 import java.util.UUID;
-import static org.hamcrest.Matchers.containsString;
+
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.erikmikac.ChapelChat.config.ApiKeyInterceptor;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.model.AskResponse;
 import com.erikmikac.ChapelChat.service.AskService;
 import com.erikmikac.ChapelChat.service.admin.ApiKeyService;
-import com.erikmikac.ChapelChat.model.admin.ResolvedKey;
+import com.erikmikac.ChapelChat.tenant.TenantContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 import jakarta.servlet.http.HttpServletRequest;
 
-@WebMvcTest(controllers = AskController.class, excludeAutoConfiguration = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
-public class AskControllerTest {
+@WebMvcTest(controllers = AskController.class, excludeAutoConfiguration = {
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
+})
+@Import(TestMvcConfig.class)
+class AskControllerTest {
 
-    @Autowired MockMvc mockMvc;
-    
-    @Autowired ObjectMapper objectMapper;
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @MockBean
     AskService askService;
@@ -42,8 +50,24 @@ public class AskControllerTest {
     @MockBean
     ApiKeyService apiKeyService;
 
+    @MockBean
+    ApiKeyInterceptor apiKeyInterceptor;
+
+    @BeforeEach
+    void setTenant() throws Exception {
+        when(apiKeyInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        TenantContext.set(new TenantContext.Context(
+                /* orgId */ "org-1",
+                /* tenantId */ "default",
+                /* orgType */ TenantContext.OrgType.CHURCH));
+    }
+
+    @AfterEach
+    void clearTenant() {
+        TenantContext.clear();
+    }
+
     private String json(Object... kv) throws Exception {
-        // quick helper to build JSON from pairs: "key","value","k2","v2",...
         if (kv.length % 2 != 0)
             throw new IllegalArgumentException("pairs required");
         Map<String, Object> map = new java.util.LinkedHashMap<>();
@@ -53,28 +77,33 @@ public class AskControllerTest {
     }
 
     @Test
-    public void ask_returns200_andBody_whenServiceOk() throws Exception {
+    void ask_returns200_andBody_whenServiceOk() throws Exception {
         when(askService.processAsk(any(AskRequest.class), any(HttpServletRequest.class)))
                 .thenReturn(ResponseEntity.ok(new AskResponse("10am on Sunday")));
-
-        when(apiKeyService.resolve(anyString())).thenReturn(new ResolvedKey("k1", "church-1"));
 
         mockMvc.perform(post("/ask")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json("message", "What time is service?", "sessionId", UUID.randomUUID().toString()))
-                .header("X-Api-Key", "k1")
                 .header("User-Agent", "JUnit/MockMvc")
-                // set client IP for completeness
                 .with(req -> {
                     req.setRemoteAddr("198.51.100.10");
                     return req;
-                }).with(csrf()))
+                }))
                 .andExpect(status().isOk())
-                // don’t assume field name in AskResponse; just check the text
-                .andExpect(content().string(containsString("10am on Sunday")));
+                .andExpect(content().string(Matchers.containsString("10am on Sunday")));
 
         verify(askService).processAsk(any(AskRequest.class), any(HttpServletRequest.class));
-
     }
 
+    @Test
+    void ask_returns400_whenServiceSaysBadRequest() throws Exception {
+        when(askService.processAsk(any(AskRequest.class), any(HttpServletRequest.class)))
+                .thenReturn(ResponseEntity.badRequest().body(new AskResponse("The message is empty.")));
+
+        mockMvc.perform(post("/ask")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json("message", " ", "sessionId", UUID.randomUUID().toString())))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(Matchers.containsString("empty")));
+    }
 }

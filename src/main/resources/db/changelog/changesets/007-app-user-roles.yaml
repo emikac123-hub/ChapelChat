@@ -1,7 +1,7 @@
 # db/changelog/0007-app-user-roles.yaml
 databaseChangeLog:
   - changeSet:
-      id: 0009-app-user-roles
+      id: 0007-app-user-roles
       author: erik
       preConditions:
         - onFail: HALT

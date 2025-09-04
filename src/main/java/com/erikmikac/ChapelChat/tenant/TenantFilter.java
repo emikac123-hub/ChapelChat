@@ -41,8 +41,8 @@ public class TenantFilter extends OncePerRequestFilter {
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
         // A) Logged-in admin (form login)
-        if (auth != null && auth.getPrincipal() instanceof HasChurchId p) {
-            return p.getChurchId();
+        if (auth != null && auth.getPrincipal() instanceof HasOrgIdentity p) {
+            return p.getOrganizationId();
         }
 
         // B) Widget/API with API key
@@ -50,7 +50,7 @@ public class TenantFilter extends OncePerRequestFilter {
         if (apiKey != null) {
             var resolved = apiKeys.resolve(apiKey); // returns {id, churchId} or null
             if (resolved != null)
-                return resolved.churchId();
+                return resolved.orgId();
         }
 
         // C) Optional: subdomain fallback (no DB call here)

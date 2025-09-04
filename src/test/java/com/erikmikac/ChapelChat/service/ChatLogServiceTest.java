@@ -46,7 +46,7 @@ import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.enums.ChatLogMetadataKey;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
-import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
+import com.erikmikac.ChapelChat.service.admin.OrganizationProfileService;
 
 @ExtendWith(MockitoExtension.class)
 class ChatLogServiceTest {
@@ -54,7 +54,7 @@ class ChatLogServiceTest {
     @Mock
     JavaMailSender mailSender;
     @Mock
-    ChurchProfileService profileService;
+    OrganizationProfileService profileService;
     @Mock
     ChatLogRepository chatLogRepository;
     @Mock
@@ -67,7 +67,7 @@ class ChatLogServiceTest {
     private ChatLog mkChatLog() {
         ChatLog log = new ChatLog();
         log.setId(UUID.fromString("1f73db28-05d6-47d5-9874-a3f6531acd2c"));
-        log.setChurchId("church-1");
+        log.setOrgId("church-1");
         log.setSessionId(sessionId);
         log.setUserQuestion("Why is the sky blue? sess-abc");
         log.setBotResponse("Rayleigh scattering!");

@@ -12,32 +12,32 @@ import java.util.Set;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.erikmikac.ChapelChat.exceptions.ChurchProfileNotFoundException;
+import com.erikmikac.ChapelChat.exceptions.OrganizationProfileNotFoundException;
 import com.erikmikac.ChapelChat.model.ChurchProfile;
 import com.erikmikac.ChapelChat.model.PromptWithChecksum;
 import com.erikmikac.ChapelChat.repository.AppUserRepository;
-import com.erikmikac.ChapelChat.repository.ChurchRepository;
+import com.erikmikac.ChapelChat.repository.OrganizationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ChurchProfileService {
+public class OrganizationProfileService {
 
-    private final ChurchRepository churchRepository;
+    private final OrganizationRepository churchRepository;
     private static final String PROFILE_DIR = "src/main/resources/churches/";
     private final ObjectMapper objectMapper;
     private final AppUserRepository appUserRepository;
 
-    public ChurchProfileService(ObjectMapper objectMapper, ChurchRepository churchRepository,
+    public OrganizationProfileService(ObjectMapper objectMapper, OrganizationRepository churchRepository,
             final AppUserRepository appUserRepository) {
         this.objectMapper = objectMapper;
         this.churchRepository = churchRepository;
         this.appUserRepository = appUserRepository;
     }
 
-    public PromptWithChecksum getSystemPromptAndChecksumFor(String churchId) throws ChurchProfileNotFoundException {
+    public PromptWithChecksum getSystemPromptAndChecksumFor(String churchId) throws OrganizationProfileNotFoundException {
         try {
             ChurchProfile profile = objectMapper.readValue(
                     new ClassPathResource("churches/" + churchId + ".json").getInputStream(),
@@ -50,7 +50,7 @@ public class ChurchProfileService {
 
         } catch (IOException e) {
             log.error("Error: Church Profile Not Found: ", e);
-            throw new ChurchProfileNotFoundException("Could not load profile for church: " + churchId, e);
+            throw new OrganizationProfileNotFoundException("Could not load profile for church: " + churchId, e);
         }
     }
 

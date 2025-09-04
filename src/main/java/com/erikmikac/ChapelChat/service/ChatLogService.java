@@ -14,7 +14,7 @@ import com.erikmikac.ChapelChat.entity.ChatLog;
 import com.erikmikac.ChapelChat.enums.ChatLogMetadataKey;
 import com.erikmikac.ChapelChat.model.AskRequest;
 import com.erikmikac.ChapelChat.repository.ChatLogRepository;
-import com.erikmikac.ChapelChat.service.admin.ChurchProfileService;
+import com.erikmikac.ChapelChat.service.admin.OrganizationProfileService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ChatLogService {
     private final JavaMailSender mailSender;
-    private final ChurchProfileService profileService;
+    private final OrganizationProfileService profileService;
     private final ChatLogRepository chatLogRepository;
     private final OpenAiService aiService;
     final int MAX_QUESTIONS_PER_SESSION = 10;
@@ -66,10 +66,10 @@ public class ChatLogService {
         }
 
         String reason = String.valueOf(meta.get(ChatLogMetadataKey.FLAG_REASON.key()));
-        Set<String> contactEmails = profileService.getContactEmailFor(chatLog.getChurchId());
+        Set<String> contactEmails = profileService.getContactEmailFor(chatLog.getOrgId());
         if (contactEmails == null || contactEmails.isEmpty()) {
             log.warn("[{}] Flagged message detected, but no contact emails found for churchId={}", requestId,
-                    chatLog.getChurchId());
+                    chatLog.getOrgId());
             return;
         }
         String subject = "⚠️ ChapelChat flagged message alert";
@@ -91,7 +91,7 @@ public class ChatLogService {
                 Session ID: %s
                 IP: %s
                 """.formatted(
-                chatLog.getChurchId(),
+                chatLog.getOrgId(),
                 chatLog.getUserQuestion(),
                 chatLog.getBotResponse(),
                 reason,

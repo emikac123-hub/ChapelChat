@@ -13,7 +13,12 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: church_id
+                  name: org_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tenant_id
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
@@ -48,9 +53,25 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             baseTableName: chat_logs
-            baseColumnNames: church_id
-            referencedTableName: church
+            baseColumnNames: org_id
+            referencedTableName: organization
             referencedColumnNames: id
-            constraintName: fk_chat_logs_church
+            constraintName: fk_chat_logs_organization
             onDelete: CASCADE
             onUpdate: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: chat_logs
+            baseColumnNames: tenant_id
+            referencedTableName: tenants
+            referencedColumnNames: id
+            constraintName: fk_chat_logs_tenant
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        - createIndex:
+            tableName: chat_logs
+            indexName: idx_chat_logs_org_tenant_timestamp
+            columns:
+              - column: { name: org_id }
+              - column: { name: tenant_id }
+              - column: { name: timestamp }
