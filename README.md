@@ -9,14 +9,14 @@ ChapelChat is a powerful, AI-driven chatbot designed to help small businesses an
 - **Secure and Scalable**: Built with Spring Boot and secured with API keys, ensuring reliable and safe operation.
 - **Extensible Architecture**: Designed for easy expansion, allowing new features and integrations to be added with minimal effort.
 - **Data Validation**: Includes a validation script to ensure that organization profiles adhere to a defined schema.
-
+- **Chat Analytics and Sentiment Analysis**: Retrieve actionable insight on what your customers or parishioners are requesting the most.
 ## Getting Started
 
 ### Prerequisites
 
 - Java 21
 - Maven
-- Docker
+- Docker (Recommend using Docker Desktop: https://docs.docker.com/desktop/)
 
 ### Installation and Configuration
 
@@ -36,7 +36,7 @@ ChapelChat is a powerful, AI-driven chatbot designed to help small businesses an
 
 3. **Configure the application**:
 
-   - Create a `application-local.yaml` file in `src/main/resources`.
+   - Local configurations are in the `application-local.yaml` file in `src/main/resources`.
    - Add your PostgreSQL and OpenAI API key details:
    
         ```yaml
@@ -54,6 +54,10 @@ ChapelChat is a powerful, AI-driven chatbot designed to help small businesses an
 
    ```bash
    mvn spring-boot:run -Dspring-boot.run.profiles=local
+   ```
+5. **(Optional) Test the Application**:
+   ```bash
+   mvn test
    ```
 
 ## Database
