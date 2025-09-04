@@ -106,6 +106,10 @@ The project includes a Node.js script to validate the organization profile JSON 
 
 To ask a question, send a POST request to the `/ask` endpoint with your API key and query:
 
+### Note
+
+This is MVP. Before production relese, API Keys will not be bundled directly into the frontend. 
+
 ```bash
 curl -X POST http://localhost:8080/ask \
      -H "X-API-KEY: your-api-key" \
