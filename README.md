@@ -10,6 +10,7 @@ ChapelChat is a powerful, AI-driven chatbot designed to help small businesses an
 - **Extensible Architecture**: Designed for easy expansion, allowing new features and integrations to be added with minimal effort.
 - **Data Validation**: Includes a validation script to ensure that organization profiles adhere to a defined schema.
 - **Chat Analytics and Sentiment Analysis**: Retrieve actionable insight on what your customers or parishioners are requesting the most.
+- 
 ## Getting Started
 
 ### Prerequisites
