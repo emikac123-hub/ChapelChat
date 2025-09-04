@@ -42,6 +42,9 @@ public class CorsConfig {
 
                 // Future dashboard API (JWT / cookies)
                 registry.addMapping("/api/**")
+                        // Explicit origins are required when credentials are allowed
+                        // to avoid Spring's wildcard + credentials restriction
+                        .allowedOrigins("http://localhost", "https://yourdashboard.tld")
                         .allowedOriginPatterns("http://localhost:*", "https://*.yourdashboard.tld")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("Content-Type", "Accept", "Authorization")
